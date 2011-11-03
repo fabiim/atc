@@ -1,33 +1,23 @@
 package testeObserver;
 
+import java.util.Observable;          //Observable is here
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Observable;
-
-public class Writer implements Runnable{
-	private Observable obs;
-	
-	
-	public Writer(ReaderThread rd){
-		obs = new Observable();
-		obs.addObserver(rd);
-	}
-	
-	public void run(){
-		int i=0;
-		
-		System.out.println(obs.countObservers());
-		
-		while(i<15){
-			try {
-				System.in.read();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			System.out.println(i+": Acordei!");
-			obs.setChanged();
-			obs.notifyObservers(i);
-			i++;
-		}
-	}
+import java.io.InputStreamReader;
+ 
+public class Writer extends Observable implements Runnable {
+    public void run() {
+        try {
+            final InputStreamReader isr = new InputStreamReader( System.in );
+            final BufferedReader br = new BufferedReader( isr );
+            while( true ) {
+                String response = br.readLine();
+                setChanged();
+                notifyObservers( response );
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

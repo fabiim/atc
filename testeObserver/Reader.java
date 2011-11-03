@@ -1,12 +1,14 @@
 package testeObserver;
 
-import java.util.*;
-
-
-public class Reader implements Observer{
-
-	public void update(Observable o, Object args){
-		System.out.println("O i Ž: "+((String)args));
-	}
-
+import java.util.Observable;
+import java.util.Observer;  /* this is Event Handler */
+ 
+public class Reader implements Observer {
+    private String resp;
+    public void update (Observable obj, Object arg) {
+        if (arg instanceof String) {
+            resp = (String) arg;
+            System.out.println("\nReceived Response: "+ resp );
+        }
+    }
 }
