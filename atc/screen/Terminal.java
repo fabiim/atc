@@ -1,4 +1,4 @@
-package screen;
+package atc.screen;
 
 import java.awt.*;
 import java.awt.event.*;

@@ -1,17 +1,17 @@
-package atc;
+package atc.atc;
 
 import java.util.Map;
 import java.util.HashMap;
 import java.lang.StringBuilder;
 
 
-public class Mapa{
+public class Board{
 	
 	private int width;
 	private int height;
 	private Map<Character,Gate> ports;
 
-	public Mapa(int w, int h, Map<Character,Gate> p){
+	public Board(int w, int h, Map<Character,Gate> p){
 		width=w;
 		height=h;
 		ports = new HashMap<Character,Gate>();
@@ -124,7 +124,7 @@ public class Mapa{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Mapa other = (Mapa) obj;
+		Board other = (Board) obj;
 		if (height != other.height)
 			return false;
 		if (ports == null) {
@@ -138,8 +138,8 @@ public class Mapa{
 		return true;
 	}
 	
-	public Mapa clone(){
-		return(new Mapa(width,height,ports));
+	public Board clone(){
+		return(new Board(width,height,ports));
 	}
 	
 }

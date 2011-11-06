@@ -1,4 +1,4 @@
-package atc;
+package atc.atc;
 
 public class Gate {
 		
@@ -10,9 +10,10 @@ public class Gate {
 		xCoord = x;
 		yCoord = y;
 		symbol = s;
+		
 	}
 	
-	public char getSymbol() {
+	public char getSymbol(){
 		return symbol;
 	}
 	public void setSymbol(Character symbol) {
@@ -45,6 +46,7 @@ public class Gate {
 		result = prime * result + symbol;
 		return result;
 	}
+	
 	
 	@Override
 	public boolean equals(Object obj) {

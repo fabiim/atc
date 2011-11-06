@@ -1,4 +1,4 @@
-package atc;
+package atc.atc;
 
 public class Plane {
 

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package screen;
+package atc.screen;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -16,8 +16,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import atc.Mapa;
-import atc.Gate;
+import atc.atc.Gate;
+import atc.atc.Board;
 
 /**
  * @author sa
@@ -28,7 +28,7 @@ public class Screen {
 	//Terminal screen;
 	//Map map
 	
-	private static Mapa map;
+	private static Board map;
 	private static Terminal term;
 
 	public static void main(String[] args){
@@ -82,7 +82,7 @@ public class Screen {
 			e.printStackTrace();
 		}
 		
-		// Verificar se as portas est‹o em coordenadas v‡lidas
+		// Verificar se as portas estï¿½o em coordenadas vï¿½lidas
 		for(Map.Entry<Character, Gate> p : ports.entrySet()){
 			int x=p.getValue().getxCoord(),y=p.getValue().getyCoord();
 			System.out.println(width+" "+height);
@@ -96,20 +96,20 @@ public class Screen {
 				(x>0&&y>0&&x!=width-1&&y!=height-1)){
 				
 				// TODO mega error
-				System.out.println("Mapa inv‡lido - Porta: "+p.getValue().getSymbol());
+				System.out.println("Mapa invï¿½lido - Porta: "+p.getValue().getSymbol());
 				System.exit(-1);
 			}
 			for(Map.Entry<Character, Gate> p2 : ports.entrySet()){
 				if(p.getValue()!=p2.getValue()&&p.getValue().getSymbol()==p2.getValue().getSymbol()){
 					// TODO mega error
-					System.out.println("Mapa inv‡lido - Porta repetida: "+p.getValue().getSymbol());
+					System.out.println("Mapa invï¿½lido - Porta repetida: "+p.getValue().getSymbol());
 					System.exit(-1);
 				}
 			}
 			
 		}
 		
-		map = new Mapa(width, height, ports);
+		map = new Board(width, height, ports);
 	}
 	
 	private static void initMap(){
