@@ -9,29 +9,33 @@ import java.util.concurrent.BlockingQueue;
  *
  */
 
+
 public class ReceiverSenderChannelThread implements Runnable{
 
-	private final BlockingQueue<ReceiverSenderMessage> buffer; 
+	private final BlockingQueue<LpcMessage> buffer; 
 	private final SendDispatcher sender;  
-	
-	protected  ReceiverSenderChannelThread(BlockingQueue<ReceiverSenderMessage> buffer,
+
+	protected  ReceiverSenderChannelThread(BlockingQueue<LpcMessage> buffer,
 			SendDispatcher sender ){
 		this.buffer = buffer; 
 		this.sender = sender; 
 	}
-	
+
 	public void run(){
-		ReceiverSenderMessage bucket;  
-		
-		while (true){
-			try{
-				bucket = buffer.take();
-			}catch(InterruptedException e){
-				continue; 
+		LpcMessage  bucket = null;  
+		while(true){
+			boolean consumed=false; 
+
+			while (!consumed){
+				try{
+					bucket = buffer.take();
+				}catch(InterruptedException e){
+					continue; 
+				}
 			}
-			// Consume the bucket -> Invoke methods on sender. 
+			// Consume the bucket -> Invoke methods on sender.
+			bucket.invokeMethod(sender); 
 		}
-		
 	}
-	
 }
+

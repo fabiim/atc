@@ -15,8 +15,7 @@ import java.io.Serializable;
  *
  */
 public class SerializableInterface {
-	
-		
+			
 	/**
 	 * Converts an object into a <code>byte[]</code>.
 	 * @param obj The object that shall be converted into <code>byte[]</code>.
@@ -24,7 +23,7 @@ public class SerializableInterface {
 	 * @throws IOException //@Sa: dunno
 	 * @see byteToObject(byte[])
 	 */
-	 private static <T extends Serializable> byte[] objectToByte(T obj) throws IOException{
+	 public static <T extends Serializable> byte[] objectToByte(T obj) throws IOException{
 		ByteArrayOutputStream bos = new ByteArrayOutputStream(); 
 		ObjectOutputStream oos = new ObjectOutputStream(bos); 
 		oos.writeObject(obj);
@@ -43,7 +42,7 @@ public class SerializableInterface {
 	 * @throws ClassNotFoundException when the <code>byte[]</code> given as argument does not represent any known object.
 	 * @see objectToByte(Object)
 	 */
-	private static  Object byteToObject(final byte[] bytes) throws IOException,ClassNotFoundException{
+	public static  Object byteToObject(final byte[] bytes) throws IOException,ClassNotFoundException{
 	      ByteArrayInputStream bis = new ByteArrayInputStream(bytes); 
 	      ObjectInputStream ois = new ObjectInputStream(bis); 
 	      Object o;

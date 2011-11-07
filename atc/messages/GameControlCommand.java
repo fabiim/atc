@@ -2,7 +2,7 @@ package atc.messages;
 
 import java.io.Serializable;
 
-public abstract class GameControl extends Message implements Serializable{
+public abstract class GameControlCommand extends Message implements Serializable{
 	private char planeId;
 
 	public char getPlaneId() {
@@ -29,7 +29,7 @@ public abstract class GameControl extends Message implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		GameControl other = (GameControl) obj;
+		GameControlCommand other = (GameControlCommand) obj;
 		if (planeId != other.planeId)
 			return false;
 		return true;

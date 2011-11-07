@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import atc.atc.PlaneHeight;
 
-public class SetHeightGoal extends GameControl implements Serializable{
+public class SetHeightGoal extends GameControlCommand implements Serializable{
 	private PlaneHeight objectiveHeight; 
 	
 	public SetHeightGoal() {
@@ -30,12 +30,9 @@ public class SetHeightGoal extends GameControl implements Serializable{
 		return objectiveHeight;
 	}
 
-
-
 	public void setObjectiveHeight(PlaneHeight objectiveHeight) {
 		this.objectiveHeight = objectiveHeight;
 	}
-
 
 
 	@Override

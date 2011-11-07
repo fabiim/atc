@@ -5,7 +5,7 @@ import java.io.Serializable;
 import atc.atc.PlaneDirection;
 import atc.atc.PlaneHeight;
 
-public class NewPlane extends GameControl implements Serializable {
+public class NewPlane extends GameControlCommand implements Serializable {
 	private char entranceGateId; 
 	private char exitGateID; 
 	private PlaneDirection direction; 
@@ -86,6 +86,7 @@ public class NewPlane extends GameControl implements Serializable {
 		return result;
 	}
 
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

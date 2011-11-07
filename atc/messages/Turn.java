@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 import atc.atc.*;
 
-public class Turn extends GameControl implements Serializable{
+public class Turn extends GameControlCommand implements Serializable{
 	private PlaneDirection direction;
 
 	public Turn(){

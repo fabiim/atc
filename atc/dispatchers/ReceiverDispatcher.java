@@ -1,5 +1,6 @@
 package atc.dispatchers;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 
 import net.sf.jgcs.ExceptionListener;
 import net.sf.jgcs.JGCSException;
@@ -8,6 +9,8 @@ import net.sf.jgcs.MessageListener;
 import net.sf.jgcs.membership.BlockListener;
 import net.sf.jgcs.membership.MembershipListener;
 import atc.atc.*;
+import atc.messages.StateMessage;
+import atc.util.ProducerConsumer;
 
 /**
  * This entitie is registered under JGCS as the following: 
@@ -24,28 +27,54 @@ import atc.atc.*;
 
 public class ReceiverDispatcher implements MessageListener, ExceptionListener, MembershipListener, BlockListener {
 	private GameState game;
-	private final BlockingQueue<ReceiverSenderMessage> queue; 
-
+	private final BlockingQueue<LpcMessage> queue; 
+	private final LpcMessage lpcFactory = new LpcMessage(); 
 	//Protected constructor. ChannelCreator can call him
-	protected ReceiverDispatcher(GameState game, BlockingQueue<ReceiverSenderMessage> queue) {
+
+	protected ReceiverDispatcher(GameState game, BlockingQueue<LpcMessage> queue) {
 		this.game = game; 
 		this.queue = queue; 
 	}
 	
 	
+	
 	@Override
 	public void onBlock(){
-		queue.add(new ReceiverSenderMessage("block") ); 
+		LpcMessage.Block m = lpcFactory.new Block(); 
+		produce(m); 
 	}
 	
 	@Override
 	public void onExcluded(){
-		// TODO - Auto-generated 
+		//TODO - AUto generated
 	}
 
+	
 	@Override
 	public void onMembershipChange() {
-		queue.add(new ReceiverSenderMessage("new membership")); 
+		StateMessage sm = new StateMessage(game);
+		//This is important. A SyncQueue will hold APPIA (the thread running this method) until the item is consumed in the queue.   
+		SynchronousQueue<Integer> qi = new SynchronousQueue<Integer>();
+		LpcMessage.MembershipChange lm = lpcFactory.new MembershipChange(sm,qi); 
+		
+		produce(lm); // produced LPC message containing above payload. 
+		
+		//Now wait for someone to produce answer on qi.
+		boolean consumed = false; 
+		
+		//ProducerConsumer.consume(consume); 
+		
+		while(!consumed){
+			
+		}
+	
+		// Send message with state.
+		//Send SyncQueue with integer. 
+		//save that inside
+		//consume the integer.
+		// We are synced and ready to go. 
+		
+		//queue.add(new ReceiverSenderMessage("new membership")); 
 	}
 
 	@Override
@@ -61,4 +90,10 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 		return null; 
 	}
 	
+
+	private void produce(final LpcMessage m){
+	}
+	
+	private void consume(final LpcMessage m){
+	}
 }

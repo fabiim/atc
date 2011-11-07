@@ -14,10 +14,8 @@ import atc.atc.GameState;
 public class ChannelCreator {
 
 	public static void CreateChannel(GameState game){
-		BlockingQueue<ReceiverSenderMessage> queue = new LinkedBlockingQueue<ReceiverSenderMessage>();
-	//	new Message.Tick(); 
-	}
-	
-	
 		
+	//	BlockingQueue<ReceiverSenderMessage> queue = new LinkedBlockingQueue<ReceiverSenderMessage>();
+		//	new Message.Tick();
+	}
 }
