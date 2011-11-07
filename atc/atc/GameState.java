@@ -187,7 +187,26 @@ public class GameState extends Observable {
 	}
 
 	private void processStateMsg(StateMessage statemsg){
+		// Get the new GameState that comes in the message
+		GameState gameState = statemsg.getGame();
+		
+		// Change everything
+		frontBuffer = new HashMap<Character,Plane>();
+		for(Map.Entry<Character, Plane> e : gameState.getFrontBuffer().entrySet())
+			frontBuffer.put(e.getKey(), e.getValue());
 
+		backBuffer = new HashMap<Character,Plane>();
+		for(Map.Entry<Character, Plane> e : gameState.getBackBuffer().entrySet())
+			backBuffer.put(e.getKey(), e.getValue());
+
+		this.successfulExits = gameState.getSuccessfulExits();
+		this.unsucessfulExits = gameState.getUnsucessfulExits();
+		this.epoch = gameState.getEpoch();
+		this.board = gameState.getBoard();
+		
+		// Notify Screen that the GameState has changed		
+		setChanged();
+		notifyObservers(frontBuffer);
 	}
 
 	private void processTurn(Turn turn){
