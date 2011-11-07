@@ -11,10 +11,7 @@ public class Plane {
 	private int yCoord;
 	private int direction;
 	private char symbol;
-	private int speed; // Casas/Tick
-	
-	
-	
+	private int speed; // Casas/Tick	
 	
 	public Plane(Character iD, Gate exitGate, int exitAltitude,
 			int altitudeObjectivo, int altitude, int xCoord, int yCoord,

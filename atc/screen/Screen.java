@@ -26,7 +26,7 @@ import atc.atc.Plane;
  * @author sa
  *
  */
-public class Screen implements Observer{
+public class Screen implements Observer,Runnable{
 	
 	//Terminal screen;
 	//Map map
@@ -34,13 +34,14 @@ public class Screen implements Observer{
 	private static Board map;
 	private static Terminal term;
 
-	public static void main(String[] args){
+	
+	public void run(){
 		readMap("teste.map");
 		initMap();
 		
 		// Start the console
-		Thread console = new Thread(new Console());
-		console.start();
+		//Thread console = new Thread(new Console());
+		//console.start();
 	}
 	
 	public void update(Observable obj, Object arg){		
@@ -57,6 +58,9 @@ public class Screen implements Observer{
 				term.setData(p.getxCoord(), p.getyCoord(), Terminal.RED, Terminal.WHITE, '+');
 			else
 				term.setData(p.getxCoord(), p.getyCoord(), p.getSymbol());
+		
+		// Render
+		term.repaint();
 	}
 	
 	private static void readMap(String fileName){
@@ -242,5 +246,7 @@ public class Screen implements Observer{
 			term.gotoxy(p.getxCoord(), p.getyCoord());
 			term.print(p.getSymbol());
 		}
+		
+		term.repaint();
 	}	
 }

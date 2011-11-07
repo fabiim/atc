@@ -20,6 +20,8 @@ public class GameState extends Observable {
 	private int unsucessfulExits;
 	private int epoch;
 	private Board board;
+	private Map<Gate,Integer> previousAdds;
+	private Map<Gate,Integer> actualAdds;
 
 	synchronized public Board getBoard() {
 		return board.clone();
@@ -28,10 +30,14 @@ public class GameState extends Observable {
 	synchronized public void setBoard(Board board) {
 		this.board = board.clone();
 	}
+	
+	public GameState(){
+		// TODO
+	}
 
 	public GameState(Map<Character, Plane> frontBuffer,
 			Map<Character, Plane> backBuffer, int successfulExits,
-			int unsucessfulExits, int epoch, Board board) {
+			int unsucessfulExits, int epoch, Board board, Map<Gate,Integer> prevAdds, Map<Gate,Integer> actAdds) {
 		this.frontBuffer = new HashMap<Character,Plane>();
 		for(Map.Entry<Character, Plane> e : frontBuffer.entrySet())
 			this.frontBuffer.put(e.getKey(), e.getValue());
@@ -43,6 +49,14 @@ public class GameState extends Observable {
 		this.unsucessfulExits = unsucessfulExits;
 		this.epoch = epoch;
 		this.board = board.clone();
+		
+		previousAdds = new HashMap<Gate,Integer>();
+		for(Map.Entry<Gate, Integer> e : prevAdds.entrySet())
+			previousAdds.put(e.getKey().clone(), e.getValue().intValue());
+		
+		actualAdds = new HashMap<Gate,Integer>();
+		for(Map.Entry<Gate, Integer> e : actAdds.entrySet())
+			actualAdds.put(e.getKey().clone(), e.getValue().intValue());
 	}
 
 	public GameState(GameState gameState) {
@@ -58,8 +72,44 @@ public class GameState extends Observable {
 		this.unsucessfulExits = gameState.getUnsucessfulExits();
 		this.epoch = gameState.getEpoch();
 		this.board = gameState.getBoard();
+		
+		previousAdds = new HashMap<Gate,Integer>();
+		for(Map.Entry<Gate, Integer> e : gameState.getPreviousAdds().entrySet())
+			previousAdds.put(e.getKey().clone(), e.getValue().intValue());
+		
+		actualAdds = new HashMap<Gate,Integer>();
+		for(Map.Entry<Gate, Integer> e : gameState.getActualAdds().entrySet())
+			actualAdds.put(e.getKey().clone(), e.getValue().intValue());
 	}
 
+	synchronized public Map<Gate,Integer> getPreviousAdds(){
+		Map<Gate,Integer> ret = new HashMap<Gate,Integer>();
+		for(Map.Entry<Gate, Integer> e : previousAdds.entrySet()){
+			ret.put(e.getKey().clone(), e.getValue().intValue());
+		}
+		return(ret);
+	}
+	
+	synchronized public void setPreviousAdds(Map<Gate,Integer> prevAdds){
+		previousAdds = new HashMap<Gate,Integer>();
+		for(Map.Entry<Gate, Integer> e : prevAdds.entrySet()){
+			previousAdds.put(e.getKey().clone(), e.getValue().intValue());
+		}
+	}
+	
+	synchronized public HashMap<Gate,Integer> getActualAdds(){
+		HashMap<Gate,Integer> ret = new HashMap<Gate,Integer>();
+		for(Map.Entry<Gate, Integer> e : actualAdds.entrySet())
+			ret.put(e.getKey().clone(), e.getValue().intValue());
+		return(ret);
+	}
+	
+	synchronized public void setActualAdds(HashMap<Gate,Integer> actAdds){
+		actualAdds = new HashMap<Gate,Integer>();
+		for(Map.Entry<Gate, Integer> e : actAdds.entrySet())
+			actualAdds.put(e.getKey().clone(), e.getValue().intValue());
+	}
+	
 	synchronized public Map<Character, Plane> getFrontBuffer() {
 		Map<Character, Plane> ret = new HashMap<Character,Plane>();
 		for(Map.Entry<Character, Plane> e : frontBuffer.entrySet())
@@ -110,15 +160,15 @@ public class GameState extends Observable {
 		this.epoch = epoch;
 	}
 
-	synchronized public <T extends Message> void processMsg(T msg){
+	synchronized public void processMsg(Message msg){
 		switch(msg.getOpcode()){
 		case TICK:
 			processTick((Tick) msg);
 			break;
-		case STATEMESSAGE:
+/*		case STATEMESSAGE:
 			processStateMsg((StateMessage) msg);
 			break;
-		case TURN:
+*/		case TURN:
 			processTurn((Turn) msg);
 			break;
 		case SET_HEIGHT_GOAL:
@@ -183,9 +233,12 @@ public class GameState extends Observable {
 		}
 
 		// Trocar os buffers
+		epoch++;
 		swapBuffers();
 	}
-
+	
+	// Processed by ReveiverDispatcher
+	/* 
 	synchronized private void processStateMsg(StateMessage statemsg){
 		// Get the new GameState that comes in the message
 		GameState gameState = statemsg.getGame();
@@ -210,14 +263,18 @@ public class GameState extends Observable {
 			obs.put(e.getKey().charValue(), e.getValue().clone());
 		setChanged();
 		notifyObservers(obs);
-	}
+	}*/
 
 	synchronized private void processTurn(Turn turn){
-		backBuffer.get(turn.getPlaneId()).setDirection(turn.getDirection());
+		Plane p = backBuffer.get(turn.getPlaneId());
+		if(p!=null)
+			p.setDirection(turn.getDirection());
 	}
 
 	synchronized private void processHeightGoal(SetHeightGoal goal){
-		backBuffer.get(goal.getPlaneId()).setAltitudeObjectivo(goal.getObjectiveHeight());
+		Plane p = backBuffer.get(goal.getPlaneId());
+		if(p!=null)
+			p.setAltitudeObjectivo(goal.getObjectiveHeight());
 	}
 
 	synchronized private void processNewPlane(NewPlane plane){
@@ -232,15 +289,21 @@ public class GameState extends Observable {
 		int y = board.getPorts().get(id).getyCoord();
 
 		// Verificar se j‡ n‹o foi adicionado um avi‹o aquela porta neste epoch
-		for(Plane p : backBuffer.values())
+		/*
+	 	for(Plane p : backBuffer.values())
 			if(p.getxCoord()==x && p.getyCoord()==y)
 				return;
+		*/
+		if(actualAdds.containsKey(board.getPorts().get(id))) return;		
 
 		// Verificar se n‹o foi adicionado um avi‹o naquela porta com aquela altitude no epoch anterior
+		/*
 		for(Plane p : frontBuffer.values())
 			if(p.getxCoord()==x && p.getyCoord()==y && p.getAltitude()==plane.getHeight())
 				return;
-
+		*/
+		if(previousAdds.containsKey(board.getPorts().get(id))) return;
+		
 		// OK, bora l‡ adicionar um avi‹o ent‹o!
 		char newID;
 		for(newID='A'; newID<='Z'; newID++)
@@ -251,18 +314,21 @@ public class GameState extends Observable {
 				plane.getHeight(), plane.getHeight(), x, y,
 				plane.getDirection(), newID, 1);
 
+		actualAdds.put(board.getPorts().get(id).clone(),p.getAltitude());
 		backBuffer.put(newID, p);		
 	}
 
 	synchronized public void swapBuffers(){
 		Map<Character,Plane> ret = new HashMap<Character,Plane>();
 		frontBuffer = new HashMap<Character,Plane>();
+		previousAdds = new HashMap<Gate,Integer>();
 		for(Map.Entry<Character, Plane> e : backBuffer.entrySet()){
 			char key = e.getKey().charValue();
 			Plane p = e.getValue();
 			frontBuffer.put(key,p.clone());
 			ret.put(key, p.clone());
 		}
+		actualAdds = new HashMap<Gate,Integer>();
 		setChanged();
 		notifyObservers(ret); 	
 	}
