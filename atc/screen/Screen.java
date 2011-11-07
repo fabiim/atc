@@ -8,6 +8,8 @@ import java.awt.event.*;
 //import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Observable;
+import java.util.Observer;
 
 // Read Map
 import java.io.BufferedReader;
@@ -18,12 +20,13 @@ import java.io.InputStreamReader;
 
 import atc.atc.Gate;
 import atc.atc.Board;
+import atc.atc.Plane;
 
 /**
  * @author sa
  *
  */
-public class Screen {
+public class Screen implements Observer{
 	
 	//Terminal screen;
 	//Map map
@@ -34,6 +37,22 @@ public class Screen {
 	public static void main(String[] args){
 		readMap("teste.map");
 		initMap();
+	}
+	
+	public void update(Observable obj, Object arg){		
+		// Clear the terminal
+		term.clearScreen();
+		
+		// Draw the borders and gates
+		drawMap();
+		
+		// Draw planes
+		Map<Character,Plane> planes = (Map<Character,Plane>) arg;
+		for(Plane p : planes.values())
+			if(p.getSymbol()=='+')
+				term.setData(p.getxCoord(), p.getyCoord(), Terminal.RED, Terminal.WHITE, '+');
+			else
+				term.setData(p.getxCoord(), p.getyCoord(), p.getSymbol());
 	}
 	
 	private static void readMap(String fileName){
