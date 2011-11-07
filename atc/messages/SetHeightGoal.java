@@ -3,6 +3,7 @@ package atc.messages;
 import java.io.Serializable;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import atc.atc.PlaneHeight;
 
 public class SetHeightGoal extends GameControlCommand implements Serializable{
@@ -11,6 +12,16 @@ public class SetHeightGoal extends GameControlCommand implements Serializable{
 public class SetHeightGoal extends GameControl implements Serializable{
 	private int objectiveHeight; 
 >>>>>>> sadone
+=======
+public class SetHeightGoal extends GameControl implements Serializable{
+	private int objectiveHeight; 
+=======
+import atc.atc.PlaneHeight;
+
+public class SetHeightGoal extends GameControlCommand implements Serializable{
+	private PlaneHeight objectiveHeight; 
+>>>>>>> 56735061e250d78a0dcc88ffef162799e3414eee
+>>>>>>> jkj
 	
 	public SetHeightGoal() {
 		setOpcode(MessageOpCodes.SET_HEIGHT_GOAL);
@@ -36,12 +47,21 @@ public class SetHeightGoal extends GameControl implements Serializable{
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	public void setObjectiveHeight(PlaneHeight objectiveHeight) {
 =======
 
 
 	public void setObjectiveHeight(int objectiveHeight) {
 >>>>>>> sadone
+=======
+
+
+	public void setObjectiveHeight(int objectiveHeight) {
+=======
+	public void setObjectiveHeight(PlaneHeight objectiveHeight) {
+>>>>>>> 56735061e250d78a0dcc88ffef162799e3414eee
+>>>>>>> jkj
 		this.objectiveHeight = objectiveHeight;
 	}
 

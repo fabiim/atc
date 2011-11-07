@@ -3,6 +3,7 @@ package atc.messages;
 import java.io.Serializable;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import atc.atc.PlaneDirection;
 import atc.atc.PlaneHeight;
 
@@ -10,6 +11,15 @@ public class NewPlane extends GameControlCommand implements Serializable {
 =======
 public class NewPlane extends GameControl implements Serializable {
 >>>>>>> sadone
+=======
+public class NewPlane extends GameControl implements Serializable {
+=======
+import atc.atc.PlaneDirection;
+import atc.atc.PlaneHeight;
+
+public class NewPlane extends GameControlCommand implements Serializable {
+>>>>>>> 56735061e250d78a0dcc88ffef162799e3414eee
+>>>>>>> jkj
 	private char entranceGateId; 
 	private char exitGateID; 
 	private int direction; 
