@@ -37,6 +37,10 @@ public class Screen implements Observer{
 	public static void main(String[] args){
 		readMap("teste.map");
 		initMap();
+		
+		// Start the console
+		Thread console = new Thread(new Console());
+		console.start();
 	}
 	
 	public void update(Observable obj, Object arg){		

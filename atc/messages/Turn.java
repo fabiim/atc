@@ -5,14 +5,19 @@ import java.io.Serializable;
 
 import atc.atc.*;
 
+<<<<<<< HEAD
 public class Turn extends GameControlCommand implements Serializable{
 	private PlaneDirection direction;
+=======
+public class Turn extends GameControl implements Serializable{
+	private int direction;
+>>>>>>> sadone
 
 	public Turn(){
 		setOpcode(MessageOpCodes.TURN); 
 	}
 	
-	public Turn(PlaneDirection direction) {
+	public Turn(int direction) {
 		setOpcode(MessageOpCodes.TURN); 
 		this.direction = direction;
 	}
@@ -25,11 +30,11 @@ public class Turn extends GameControlCommand implements Serializable{
 	public Turn clone() { return new Turn(this); }
 
 
-	public PlaneDirection getDirection() {
+	public int getDirection() {
 		return direction;
 	}
 
-	public void setDirection(PlaneDirection direction) {
+	public void setDirection(int direction) {
 		this.direction = direction;
 	}
 
@@ -37,8 +42,7 @@ public class Turn extends GameControlCommand implements Serializable{
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result
-				+ ((direction == null) ? 0 : direction.hashCode());
+		result = prime * result + direction;
 		return result;
 	}
 
@@ -51,14 +55,13 @@ public class Turn extends GameControlCommand implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		Turn other = (Turn) obj;
-		if (direction.getKey() != other.getDirection().getKey())
-			return false;
+		if (direction!=other.getDirection()) return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "Turn [direction=" + direction + "]";
+		return "Turn [Plane="+this.getPlaneId()+" direction=" + direction + "]";
 	}
 
 }

@@ -2,15 +2,19 @@ package atc.messages;
 
 import java.io.Serializable;
 
+<<<<<<< HEAD
 import atc.atc.PlaneDirection;
 import atc.atc.PlaneHeight;
 
 public class NewPlane extends GameControlCommand implements Serializable {
+=======
+public class NewPlane extends GameControl implements Serializable {
+>>>>>>> sadone
 	private char entranceGateId; 
 	private char exitGateID; 
-	private PlaneDirection direction; 
-	private PlaneHeight height;
-	private PlaneHeight heighGoal;
+	private int direction; 
+	private int height;
+	private int heightGoal;
 	
 	
 	
@@ -23,13 +27,13 @@ public class NewPlane extends GameControlCommand implements Serializable {
 	 * @param heighGoal
 	 */
 	public NewPlane(char entranceGateId, char exitGateID,
-			PlaneDirection direction, PlaneHeight height, PlaneHeight heighGoal){
+			int direction, int height, int heighGoal){
 		setOpcode(MessageOpCodes.NEW_PLANE); 
 		this.entranceGateId = entranceGateId;
 		this.exitGateID = exitGateID;
 		this.direction = direction;
 		this.height = height;
-		this.heighGoal = heighGoal;
+		this.heightGoal = heighGoal;
 	}
 	
 	public NewPlane(NewPlane np){
@@ -38,7 +42,7 @@ public class NewPlane extends GameControlCommand implements Serializable {
 		this.exitGateID = np.getExitGateID();
 		this.direction = np.getDirection();
 		this.height = np.getHeight();
-		this.heighGoal = np.getHeighGoal(); 
+		this.heightGoal = np.getHeightGoal(); 
 		
 	}
 	public char getEntranceGateId() {
@@ -53,36 +57,34 @@ public class NewPlane extends GameControlCommand implements Serializable {
 	public void setExitGateID(char exitGateID) {
 		this.exitGateID = exitGateID;
 	}
-	public PlaneDirection getDirection() {
+	public int getDirection() {
 		return direction;
 	}
-	public void setDirection(PlaneDirection direction) {
+	public void setDirection(int direction) {
 		this.direction = direction;
 	}
-	public PlaneHeight getHeight() {
+	public int getHeight() {
 		return height;
 	}
-	public void setHeight(PlaneHeight height) {
+	public void setHeight(int height) {
 		this.height = height;
 	}
-	public PlaneHeight getHeighGoal() {
-		return heighGoal;
+	public int getHeightGoal() {
+		return heightGoal;
 	}
-	public void setHeighGoal(PlaneHeight heighGoal) {
-		this.heighGoal = heighGoal;
+	public void setHeightGoal(int heighGoal) {
+		this.heightGoal = heighGoal;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result
-				+ ((direction == null) ? 0 : direction.hashCode());
+		result = prime * result + direction;
 		result = prime * result + entranceGateId;
 		result = prime * result + exitGateID;
-		result = prime * result
-				+ ((heighGoal == null) ? 0 : heighGoal.hashCode());
-		result = prime * result + ((height == null) ? 0 : height.hashCode());
+		result = prime * result + heightGoal;
+		result = prime * result + height;
 		return result;
 	}
 
@@ -102,7 +104,7 @@ public class NewPlane extends GameControlCommand implements Serializable {
 			return false;
 		if (exitGateID != other.exitGateID)
 			return false;
-		if (heighGoal != other.heighGoal)
+		if (heightGoal != other.getHeightGoal())
 			return false;
 		if (height != other.height)
 			return false;
@@ -113,7 +115,7 @@ public class NewPlane extends GameControlCommand implements Serializable {
 	public String toString() {
 		return "NewPlane [entranceGateId=" + entranceGateId + ", exitGateID="
 				+ exitGateID + ", direction=" + direction + ", height="
-				+ height + ", heighGoal=" + heighGoal + "]";
+				+ height + ", heighGoal=" + heightGoal + "]";
 	} 
 	
 	

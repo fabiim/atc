@@ -2,10 +2,15 @@ package atc.messages;
 
 import java.io.Serializable;
 
+<<<<<<< HEAD
 import atc.atc.PlaneHeight;
 
 public class SetHeightGoal extends GameControlCommand implements Serializable{
 	private PlaneHeight objectiveHeight; 
+=======
+public class SetHeightGoal extends GameControl implements Serializable{
+	private int objectiveHeight; 
+>>>>>>> sadone
 	
 	public SetHeightGoal() {
 		setOpcode(MessageOpCodes.SET_HEIGHT_GOAL);
@@ -15,7 +20,7 @@ public class SetHeightGoal extends GameControlCommand implements Serializable{
 	/**
 	 * @param objectiveHeight
 	 */
-	public SetHeightGoal(PlaneHeight objectiveHeight) {
+	public SetHeightGoal(int objectiveHeight) {
 		setOpcode(MessageOpCodes.SET_HEIGHT_GOAL);
 		this.objectiveHeight = objectiveHeight;
 	}
@@ -26,11 +31,17 @@ public class SetHeightGoal extends GameControlCommand implements Serializable{
 	}
 	public SetHeightGoal clone(){ return new SetHeightGoal(this); } 
 	
-	public PlaneHeight getObjectiveHeight() {
+	public int getObjectiveHeight() {
 		return objectiveHeight;
 	}
 
+<<<<<<< HEAD
 	public void setObjectiveHeight(PlaneHeight objectiveHeight) {
+=======
+
+
+	public void setObjectiveHeight(int objectiveHeight) {
+>>>>>>> sadone
 		this.objectiveHeight = objectiveHeight;
 	}
 
@@ -39,8 +50,7 @@ public class SetHeightGoal extends GameControlCommand implements Serializable{
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result
-				+ ((objectiveHeight == null) ? 0 : objectiveHeight.hashCode());
+		result = prime * result + objectiveHeight;
 		return result;
 	}
 
@@ -64,7 +74,7 @@ public class SetHeightGoal extends GameControlCommand implements Serializable{
 
 	@Override
 	public String toString() {
-		return "SetHeightGoal [objectiveHeight=" + objectiveHeight + "]";
+		return "SetHeightGoal [Plane="+this.getPlaneId()+" objectiveHeight=" + objectiveHeight + "]";
 	}
 
 	

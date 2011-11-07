@@ -4,21 +4,21 @@ public class Plane {
 
 	private Character ID;
 	private Gate exitGate;
-	private PlaneHeight exitAltitude;
-	private PlaneHeight altitudeObjectivo;
-	private PlaneHeight altitude;
+	private int exitAltitude;
+	private int altitudeObjectivo;
+	private int altitude;
 	private int xCoord;
 	private int yCoord;
-	private PlaneDirection direction;
+	private int direction;
 	private char symbol;
 	private int speed; // Casas/Tick
 	
 	
 	
 	
-	public Plane(Character iD, Gate exitGate, PlaneHeight exitAltitude,
-			PlaneHeight altitudeObjectivo, PlaneHeight altitude, int xCoord, int yCoord,
-			PlaneDirection direction) {
+	public Plane(Character iD, Gate exitGate, int exitAltitude,
+			int altitudeObjectivo, int altitude, int xCoord, int yCoord,
+			int direction) {
 		super();
 		ID = iD;
 		this.exitGate = exitGate.clone();
@@ -32,9 +32,9 @@ public class Plane {
 		speed = 1;
 	}
 	
-	public Plane(Character iD, Gate exitGate, PlaneHeight exitAltitude,
-			PlaneHeight altitudeObjectivo, PlaneHeight altitude, int xCoord, int yCoord,
-			PlaneDirection direction, char symbol, int speed) {
+	public Plane(Character iD, Gate exitGate, int exitAltitude,
+			int altitudeObjectivo, int altitude, int xCoord, int yCoord,
+			int direction, char symbol, int speed) {
 		super();
 		ID = iD;
 		this.exitGate = exitGate.clone();
@@ -64,27 +64,27 @@ public class Plane {
 		this.exitGate = exitGate.clone();
 	}
 
-	public PlaneHeight getExitAltitude() {
+	public int getExitAltitude() {
 		return exitAltitude;
 	}
 
-	public void setExitAltitude(PlaneHeight exitAltitude) {
+	public void setExitAltitude(int exitAltitude) {
 		this.exitAltitude = exitAltitude;
 	}
 
-	public PlaneHeight getAltitudeObjectivo() {
+	public int getAltitudeObjectivo() {
 		return altitudeObjectivo;
 	}
 
-	public void setAltitudeObjectivo(PlaneHeight altitudeObjectivo) {
+	public void setAltitudeObjectivo(int altitudeObjectivo) {
 		this.altitudeObjectivo = altitudeObjectivo;
 	}
 
-	public PlaneHeight getAltitude() {
+	public int getAltitude() {
 		return altitude;
 	}
 
-	public void setAltitude(PlaneHeight altitude) {
+	public void setAltitude(int altitude) {
 		this.altitude = altitude;
 	}
 
@@ -104,11 +104,11 @@ public class Plane {
 		this.yCoord = yCoord;
 	}
 
-	public PlaneDirection getDirection() {
+	public int getDirection() {
 		return direction;
 	}
 
-	public void setDirection(PlaneDirection direction) {
+	public void setDirection(int direction) {
 		this.direction = direction;
 	}
 
@@ -133,10 +133,10 @@ public class Plane {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((ID == null) ? 0 : ID.hashCode());
-		result = prime * result + altitude.ordinal();
-		result = prime * result + altitudeObjectivo.ordinal();
-		result = prime * result + direction.ordinal();
-		result = prime * result + exitAltitude.ordinal();
+		result = prime * result + altitude;
+		result = prime * result + altitudeObjectivo;
+		result = prime * result + direction;
+		result = prime * result + exitAltitude;
 		result = prime * result
 				+ ((exitGate == null) ? 0 : exitGate.hashCode());
 		result = prime * result + symbol;
@@ -206,38 +206,38 @@ public class Plane {
 
 	public void move(){
 		// Altura
-		if(altitude.getHeight()<altitudeObjectivo.getHeight()) // Aqui metes 1000
-			// TODO FABIO TRATA DISTO
-		if(altitude.getHeight()>altitudeObjectivo.getHeight()) // Aqui tiras 1000
-			// TODO FABIO TRATA DISTO
+		if(altitude<altitudeObjectivo) // Aqui metes 1000
+			altitude+=1000;
+		if(altitude>altitudeObjectivo) // Aqui tiras 1000
+			altitude-=1000;
 	
 		// Andar
 		switch(direction){
-			case N:
+			case 1:
 				yCoord++;
 				break;
-			case NE:
+			case 2:
 				yCoord++;
 				xCoord++;
 				break;
-			case E:
+			case 3:
 				xCoord++;
 				break;
-			case SE:
+			case 4:
 				xCoord++;
 				yCoord--;
 				break;
-			case S:
+			case 6:
 				yCoord--;
 				break;
-			case SW:
+			case 7:
 				xCoord--;
 				yCoord--;
 				break;
-			case W:
+			case 8:
 				xCoord--;
 				break;
-			case NW:
+			case 9:
 				xCoord--;
 				yCoord++;
 				break;
