@@ -5,22 +5,8 @@ import java.io.Serializable;
 
 import atc.atc.*;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 public class Turn extends GameControlCommand implements Serializable{
-	private PlaneDirection direction;
-=======
-public class Turn extends GameControl implements Serializable{
 	private int direction;
->>>>>>> sadone
-=======
-public class Turn extends GameControl implements Serializable{
-	private int direction;
-=======
-public class Turn extends GameControlCommand implements Serializable{
-	private PlaneDirection direction;
->>>>>>> 56735061e250d78a0dcc88ffef162799e3414eee
->>>>>>> jkj
 
 	public Turn(){
 		setOpcode(MessageOpCodes.TURN); 
