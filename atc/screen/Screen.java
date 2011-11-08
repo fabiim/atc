@@ -18,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import atc.atc.GameState;
 import atc.atc.Gate;
 import atc.atc.Board;
 import atc.atc.Plane;
@@ -28,20 +29,19 @@ import atc.atc.Plane;
  */
 public class Screen implements Observer,Runnable{
 	
-	//Terminal screen;
-	//Map map
-	
 	private static Board map;
 	private static Terminal term;
 
+	public Screen(){
+		map = Board.readMap(GameState._defaultBoardFile);
+	}
+	
+	public Screen(String filename){
+		map = Board.readMap(filename);
+	}
 	
 	public void run(){
-		readMap("teste.map");
 		initMap();
-		
-		// Start the console
-		//Thread console = new Thread(new Console());
-		//console.start();
 	}
 	
 	public void update(Observable obj, Object arg){		
@@ -63,6 +63,7 @@ public class Screen implements Observer,Runnable{
 		term.repaint();
 	}
 	
+	/*
 	private static void readMap(String fileName){
 		int width=20; // TODO valores default tem de ser discutidos
 		int height=20;
@@ -137,7 +138,7 @@ public class Screen implements Observer,Runnable{
 		}
 		
 		map = new Board(width, height, ports);
-	}
+	}*/
 	
 	private static void initMap(){
 		 final Frame f = new Frame("ATC");
@@ -149,6 +150,7 @@ public class Screen implements Observer,Runnable{
 
 		    term = new Terminal(map.getWidth(),map.getHeight());
 		    
+		    /*
 		    // disabling forward focus traversal allows TAB to reach the component
 		    //term.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, Collections.EMPTY_SET);
 		    term.addKeyListener(new KeyAdapter() {
@@ -193,7 +195,7 @@ public class Screen implements Observer,Runnable{
 		                }
 		            }
 		        } );
-
+*/
 		    term.setScroll(false);
 		    
 		    drawMap();
@@ -202,22 +204,7 @@ public class Screen implements Observer,Runnable{
 		    f.add(term, BorderLayout.CENTER);
 		    term.validate();
 		    f.pack();
-		    f.setVisible(true);		    
-		   
-		    term.gotoxy(9, 11);
-		    term.print('O');
-		    term.repaint();
-		    System.out.println(term.getMaximumSize() +"\n" +
-		    		term.getMinimumSize() + "\n" + 
-		    		term.getSize() + "\n" + 
-		    		term.getWidth() + "\n" + 
-		    		term.getHeight() + "\n" +
-		    		term.WIDTH+"\n" +
-		    		term.HEIGHT
-		    );
-		    
-		    term.gotoxy(0, 0);
-		    //term.print(map.toString());
+		    f.setVisible(true);
 	}
 	
 	private static void drawMap(){
