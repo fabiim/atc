@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Observable;
+import java.util.Random;
 
 import atc.messages.Message;
 import atc.messages.NewPlane;
@@ -183,10 +184,10 @@ public class GameState extends Observable {
 		case TICK:
 			processTick((Tick) msg);
 			break;
-/*		case STATEMESSAGE:
+		case STATEMESSAGE:
 			processStateMsg((StateMessage) msg);
 			break;
-*/		case TURN:
+		case TURN:
 			processTurn((Turn) msg);
 			break;
 		case SET_HEIGHT_GOAL:
@@ -250,13 +251,58 @@ public class GameState extends Observable {
 			}
 		}
 
+		// Reset avioes adicionados
+		previousAdds = actualAdds;
+		actualAdds = new HashMap<Gate,Integer>();
+		
 		// Trocar os buffers
 		epoch++;
 		swapBuffers();
 	}
 	
-	// Processed by ReveiverDispatcher
-	/* 
+	synchronized public NewPlane createRandomPlane(){
+		// Get an ID
+		Random rand = new Random();
+		Character id = 'A';
+		int roll=rand.nextInt(26);
+		for(int i=0;i<=roll || frontBuffer.containsKey(id);i++,id++);
+		
+		// Get an exit gate
+		Gate eg = board.getPorts().values().toArray(new Gate[26])[rand.nextInt(board.getPorts().size())].clone();
+		
+		// Get an entrance gate
+		Gate ge = board.getPorts().values().toArray(new Gate[26])[rand.nextInt(board.getPorts().size())].clone();
+		
+		// Exit altitude
+		int ea = rand.nextInt(9000);
+		if(ea<4000)
+			ea=3000;
+		else
+			ea=7000;
+		
+		// Altitude
+		int al = rand.nextInt(9000);
+		if(al<2667)
+			al=1000;
+		else if(al<5333)
+			al=5000;
+		else
+			al=9000;
+		
+		// Altitude objectivo
+		int ao=al;
+		
+		// Get direction
+		int di;
+		do
+			di=rand.nextInt(10);
+		while(di==5);
+
+		// Return the new plane
+		return(new NewPlane(ge.getSymbol(), eg.getSymbol(), di, al, ao));		
+	}
+	
+	// Processed by ReveiverDispatcher 
 	synchronized private void processStateMsg(StateMessage statemsg){
 		// Get the new GameState that comes in the message
 		GameState gameState = statemsg.getGame();
@@ -281,7 +327,7 @@ public class GameState extends Observable {
 			obs.put(e.getKey().charValue(), e.getValue().clone());
 		setChanged();
 		notifyObservers(obs);
-	}*/
+	}
 
 	synchronized private void processTurn(Turn turn){
 		Plane p = backBuffer.get(turn.getPlaneId());
