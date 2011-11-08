@@ -5,11 +5,25 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import atc.messages.*;
 import atc.atc.*;
+import atc.dispatchers.SendDispatcher;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
 
 public class Console implements Runnable{
+	
+	private GameState gs;
+	private Timer timer;
+	private NewPlaneTimer task;
+	private SendDispatcher sd;
+	
+	public Console(GameState gs, SendDispatcher sd){
+		this.gs=gs;
+		timer=new Timer();
+		task=new NewPlaneTimer(gs,sd);
+		timer.scheduleAtFixedRate(task, 1000, 1000);
+	}
 	
 	public void run(){
 		String input;
@@ -46,6 +60,7 @@ public class Console implements Runnable{
 				hmsg.setObjectiveHeight(Integer.valueOf(value)*1000);
 				// Send message
 				System.out.println(hmsg.toString()); // DEBUG
+				sd.send(hmsg);
 				break;
 			case 't':
 				// Create Turn message
@@ -55,6 +70,7 @@ public class Console implements Runnable{
 				tmsg.setDirection(Integer.valueOf(value));
 				// Send message
 				System.out.println(tmsg.toString()); // DEBUG
+				sd.send(tmsg);
 				break;
 			default:
 				return;
@@ -72,6 +88,7 @@ public class Console implements Runnable{
 			
 			// Send message
 			System.out.println("To "+splited[0]+": "+splited[1]);
+			// sd.send();
 		}
 	}
 }
