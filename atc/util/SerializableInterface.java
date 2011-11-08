@@ -1,7 +1,7 @@
 /**
  * 
  */
-package atc.messages;
+package atc.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;

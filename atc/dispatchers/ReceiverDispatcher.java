@@ -1,4 +1,5 @@
 package atc.dispatchers;
+import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
@@ -11,7 +12,8 @@ import net.sf.jgcs.membership.MembershipListener;
 import atc.atc.*;
 import atc.messages.StateMessage;
 import atc.util.ProducerConsumer;
-
+import atc.util.SerializableInterface;
+import org.apache.log4j.*;
 /**
  * This entitie is registered under JGCS as the following: 
  * MessageListener, ExceptionListener, MembershipListener, BlockListener
@@ -31,6 +33,14 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 	private final LpcMessage lpcFactory = new LpcMessage(); 
 	//Protected constructor. ChannelCreator can call him
 
+	// If true we are in the state where we must wait for all stateGame messages
+	private boolean resolving_states_state = false;
+	private boolean blocked_state = false; 
+	private Integer received_states = null; 
+	private Integer membership_size = null;
+	private Logger logger = Logger.getLogger("ReceiverDispatcher");
+
+	
 	protected ReceiverDispatcher(GameState game, BlockingQueue<LpcMessage> queue) {
 		this.game = game; 
 		this.queue = queue; 
@@ -41,7 +51,11 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 	@Override
 	public void onBlock(){
 		LpcMessage.Block m = lpcFactory.new Block(); 
-		produce(m); 
+		ProducerConsumer.produce(queue, m); 
+
+		//TODO - block state never read locally
+		blocked_state = true;
+		resolving_states_state = false;  
 	}
 	
 	@Override
@@ -57,24 +71,17 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 		SynchronousQueue<Integer> qi = new SynchronousQueue<Integer>();
 		LpcMessage.MembershipChange lm = lpcFactory.new MembershipChange(sm,qi); 
 		
-		produce(lm); // produced LPC message containing above payload. 
+		ProducerConsumer.produce(queue,lm); // produced LPC message containing above payload. 
 		
 		//Now wait for someone to produce answer on qi.
-		boolean consumed = false; 
+
 		
 		//ProducerConsumer.consume(consume); 
 		
-		while(!consumed){
-			
-		}
-	
-		// Send message with state.
-		//Send SyncQueue with integer. 
-		//save that inside
-		//consume the integer.
-		// We are synced and ready to go. 
-		
-		//queue.add(new ReceiverSenderMessage("new membership")); 
+		membership_size = ProducerConsumer.consume(qi);
+		received_states = new Integer(0); 
+		resolving_states_state = true;
+		blocked_state = false; 
 	}
 
 	@Override
@@ -85,15 +92,36 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 
 	
 	@Override
-	public Object onMessage(Message arg0){
-	// TODO - make me
+	public Object onMessage(Message msg){
+		atc.messages.Message  game_message = null; 
+		try {
+			  game_message	= (atc.messages.Message) SerializableInterface.byteToObject(msg.getPayload());
+			game.processMsg(game_message); 
+		} catch (Exception e) {
+			logger.fatal("Could not deserialize received message");
+			logger.fatal(e.getMessage() + e.getStackTrace()); 
+		} 
+		
+		if (resolving_states_state){
+			if (game_message instanceof StateMessage){
+				//we accept those messages in this state
+				
+				//TODO - if not in total order we have the problem of processes choosing different states in different ticks
+				StateMessage sm = (StateMessage) game_message; 
+				if (sm.getGame().getEpoch() > game.getEpoch()){
+					game = sm.getGame(); 
+				}
+				
+				//check to see if it is the last message
+				received_states ++; 
+				if (received_states == membership_size) {
+					resolving_states_state = false; 
+				}
+			}
+		}
+		else{
+			game.processMsg(game_message); 
+		}
 		return null; 
-	}
-	
-
-	private void produce(final LpcMessage m){
-	}
-	
-	private void consume(final LpcMessage m){
 	}
 }

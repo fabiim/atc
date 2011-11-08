@@ -12,6 +12,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import atc.atc.GameState;
 import atc.messages.*;
+import atc.util.ProducerConsumer;
+import atc.util.SerializableInterface;
 
 import com.sun.jmx.remote.util.Service;
 
@@ -22,6 +24,8 @@ import net.sf.jgcs.NotJoinedException;
 import net.sf.jgcs.UnsupportedServiceException;
 import net.sf.jgcs.membership.BlockSession;
 
+import org.apache.*;
+import org.apache.log4j.Logger;
 class Ticker extends TimerTask{
 	private final SendDispatcher sender; 
 	//When running sends tick to members of the game
@@ -45,13 +49,12 @@ public  class SendDispatcher{
 	private BlockSession controlChannel;
 	private DataSession dataChannel;
 	private net.sf.jgcs.Service commandService; 
+	private Logger logger = Logger.getLogger("SendDispatcher"); 
 	
 	private Lock  lock = new ReentrantLock(); // acquire to do anything. Sequential behaviour for now.
 
 	 //INVARIANT: when true no messages are send by this object.
 	private Boolean can_send_messages; // Refers to the blocked state on view synchronous protocol. 
-	 
-
 	 
 	 //INVARIANT : If ticker is different from null the process is the current leader. 
 	 Timer ticker= null ;   //Responsible for ticker thread. Sends tick.  
@@ -63,6 +66,7 @@ public  class SendDispatcher{
 		 this.commandService = gameService; 
 	 }
 
+	 
 	 public void send(Message cmd){
 		 lock.lock();
 		 	if (can_send_messages) {
@@ -77,6 +81,7 @@ public  class SendDispatcher{
 	 
 	 
 	 public void block(){
+		 System.err.println("blocking"); 
 		 lock.lock(); 
 		 try{
 		 		can_send_messages = false;
@@ -97,7 +102,6 @@ public  class SendDispatcher{
 		}
 		 finally{
 			 lock.unlock();
-			 
 		 }
 	 }
 	 /**
@@ -108,35 +112,40 @@ public  class SendDispatcher{
 	  */
 
 	 public void membershipChange(StateMessage msg, SynchronousQueue<Integer> queue){
-		 boolean produced = false; 
-		 lock.lock();
-		 
+		int n;
+		logger.debug("membershipChange warning");
+		System.err.println("Chaning members"); 
+		try {
+			n = controlChannel.getMembership().getMembershipList().size();
+			//Check to see if we are the leader
+			// TODO - use the same membership
+			if (controlChannel.getMembership().getCoordinatorRank() == controlChannel.getMembership().getLocalRank() ) {
+				CreateTick(); 
+			}
+			
+		} catch (NotJoinedException e) {
+			logger.fatal("membershipChange could not get membership list : Should exit the program"); 
+			return ; 
+		}
+	
+		
+	 ProducerConsumer.produce(queue, n); 
+	lock.lock();
 		 try{
-			 int n = controlChannel.getMembership().getMembershipList().size();
-			 while(!produced){
-				 try{
-					 queue.put(n);
-					 produced = true; 
-				 }catch(InterruptedException e){
-					 continue; 
-				 }
-			 }
-			 
 			 //TODO - clean me up scotty. broadcastMessage checks can_send_messages 
 			 //We can not send messages until we receive all states. 
 			 can_send_messages = true; 
 			 broadcastMessage(msg); 
 			 can_send_messages = false; 
-		 } catch (NotJoinedException e){
-			 e.printStackTrace();
-		 }
-		 finally{
+		 }finally{
 			 lock.unlock(); 
 		 }
+		 
+		 System.err.println("success"); 
 	 }
 	 
-	 
 	 public void unBlock(){
+		 System.err.println("unblocking"); 
 		 lock.lock(); 
 		 try{
 			 can_send_messages = true;
@@ -144,12 +153,14 @@ public  class SendDispatcher{
 		 finally{
 			 lock.unlock();
 		 }
+		 logger.debug("unblocked"); 
 	 }
 
 	 	 /*
 	 	  * Use this method to activate the leader mode in process. 
 	 	  */
 	 	public  void CreateTick(){
+	 		System.err.println("being leader"); 
 	 		ticker = new Timer();
 	 		ticker.scheduleAtFixedRate(new Ticker(this), SendDispatcher.TICK_RATE_MSS, SendDispatcher.TICK_RATE_MSS); 
 	 	}
