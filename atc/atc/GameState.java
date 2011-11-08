@@ -13,6 +13,8 @@ import atc.messages.Tick;
 import atc.messages.Turn;
 
 public class GameState extends Observable {
+	
+	public final static String _defaultBoardFile = "default.map";
 
 	private Map<Character,Plane> frontBuffer; // The planes being shown on the screen.
 	private Map<Character,Plane> backBuffer; // The new state of the game, still being processed.
@@ -32,7 +34,23 @@ public class GameState extends Observable {
 	}
 	
 	public GameState(){
-		// TODO
+		frontBuffer = new HashMap<Character,Plane>();
+		backBuffer = new HashMap<Character,Plane>();
+		previousAdds = new HashMap<Gate,Integer>();
+		actualAdds = new HashMap<Gate,Integer>();
+		successfulExits = 0;
+		unsucessfulExits = 0;
+		board = Board.readMap(_defaultBoardFile);
+	}
+	
+	public GameState(String filename){
+		frontBuffer = new HashMap<Character,Plane>();
+		backBuffer = new HashMap<Character,Plane>();
+		previousAdds = new HashMap<Gate,Integer>();
+		actualAdds = new HashMap<Gate,Integer>();
+		successfulExits = 0;
+		unsucessfulExits = 0;
+		board = Board.readMap(filename);
 	}
 
 	public GameState(Map<Character, Plane> frontBuffer,

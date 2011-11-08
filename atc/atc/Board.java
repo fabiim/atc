@@ -2,6 +2,11 @@ package atc.atc;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.StringBuilder;
 
 
@@ -17,6 +22,82 @@ public class Board{
 		ports = new HashMap<Character,Gate>();
 		for(Map.Entry<Character, Gate> e : p.entrySet())
 			ports.put(e.getKey().charValue(),e.getValue().clone());
+	}
+	
+	public static Board readMap(String fileName){
+		int width=20; // TODO valores default tem de ser discutidos
+		int height=20;
+		Map<Character,Gate> ports = new HashMap<Character,Gate>();
+		String s;
+		BufferedReader in;
+		String[] porta;
+		
+		try {
+			in = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
+			
+			// TODO validar syntax
+			
+			// Ler
+			// Width
+			s = in.readLine();
+			if(s==null); // TODO mega error
+			s = s.substring(6); // "width=" has 6 chars
+			s = s.trim();
+			width = (Integer.valueOf(s));
+			// Height
+			s = in.readLine();
+			if(s==null); // TODO mega error
+			s = s.substring(7); // "height=" has 7 chars
+			s = s.trim();
+			height = (Integer.valueOf(s));			
+			// Portas
+			s = in.readLine();
+			
+			if(!s.equals("portas:")) System.out.println("erro"); // TODO mega error
+			else{
+				for(s = in.readLine();s!=null;s = in.readLine()){
+					s.trim();
+					porta = s.split(",");
+					ports.put(porta[0].charAt(0),new Gate(porta[0].charAt(0),Integer.valueOf(porta[1]),Integer.valueOf(porta[2])));
+				}
+			}
+			in.close();			
+		} catch (FileNotFoundException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (IOException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		// Verificar se as portas est�o em coordenadas v�lidas
+		for(Map.Entry<Character, Gate> p : ports.entrySet()){
+			int x=p.getValue().getxCoord(),y=p.getValue().getyCoord();
+			System.out.println(width+" "+height);
+			System.out.println(x+" "+y);
+			if((x==0&&y==0) ||
+				(x==width-1&&y==height-1) ||
+				(x==0&&y==height-1) ||
+				(x==width-1&&y==0) ||
+				x<0 || x>=width ||
+				y<0 || y>=height ||
+				(x>0&&y>0&&x!=width-1&&y!=height-1)){
+				
+				// TODO mega error
+				System.out.println("Mapa invalido - Porta: "+p.getValue().getSymbol());
+				System.exit(-1);
+			}
+			for(Map.Entry<Character, Gate> p2 : ports.entrySet()){
+				if(p.getValue()!=p2.getValue()&&p.getValue().getSymbol()==p2.getValue().getSymbol()){
+					// TODO mega error
+					System.out.println("Mapa invalido - Porta repetida: "+p.getValue().getSymbol());
+					System.exit(-1);
+				}
+			}
+			
+		}
+		
+		return(new Board(width, height, ports));
 	}
 
 	public int getWidth() {

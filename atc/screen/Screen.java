@@ -123,13 +123,13 @@ public class Screen implements Observer,Runnable{
 				(x>0&&y>0&&x!=width-1&&y!=height-1)){
 				
 				// TODO mega error
-				System.out.println("Mapa inv�lido - Porta: "+p.getValue().getSymbol());
+				System.out.println("Mapa invalido - Porta: "+p.getValue().getSymbol());
 				System.exit(-1);
 			}
 			for(Map.Entry<Character, Gate> p2 : ports.entrySet()){
 				if(p.getValue()!=p2.getValue()&&p.getValue().getSymbol()==p2.getValue().getSymbol()){
 					// TODO mega error
-					System.out.println("Mapa inv�lido - Porta repetida: "+p.getValue().getSymbol());
+					System.out.println("Mapa invalido - Porta repetida: "+p.getValue().getSymbol());
 					System.exit(-1);
 				}
 			}
