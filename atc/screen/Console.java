@@ -45,7 +45,7 @@ public class Console implements Runnable{
 				hmsg.setPlaneId(idAviao);
 				hmsg.setObjectiveHeight(Integer.valueOf(value)*1000);
 				// Send message
-				System.out.println(hmsg.toString());
+				System.out.println(hmsg.toString()); // DEBUG
 				break;
 			case 't':
 				// Create Turn message
@@ -54,7 +54,7 @@ public class Console implements Runnable{
 				if(Integer.valueOf(value)==5) return;
 				tmsg.setDirection(Integer.valueOf(value));
 				// Send message
-				System.out.println(tmsg.toString());
+				System.out.println(tmsg.toString()); // DEBUG
 				break;
 			default:
 				return;
@@ -71,7 +71,7 @@ public class Console implements Runnable{
 			// Create chat message
 			
 			// Send message
-			System.out.println(splited[0]+" says: "+splited[1]);
+			System.out.println("To "+splited[0]+": "+splited[1]);
 		}
 	}
 }
