@@ -19,13 +19,23 @@ import atc.atc.GameState;
  */
 public class ChannelCreator {
 
+	private static SendDispatcher sender; 
+	private static ReceiverDispatcher receiver; 
+	
+	public static SendDispatcher getSenderDispatcher(){
+		return sender; 
+	}
+	public static ReceiverDispatcher getReceiverDispatcher(){
+		return receiver; 
+	}
+	
 	public static void CreateChannel(GameState game, AppiaService servTotal,
 			BlockSession controlS, DataSession dataS) throws JGCSException{
 		
 		
 		BlockingQueue<LpcMessage> queue = new LinkedBlockingQueue<LpcMessage>();
-		ReceiverDispatcher receiver = new ReceiverDispatcher(game,queue); 
-		SendDispatcher sender = new SendDispatcher(controlS, dataS, servTotal);
+		receiver = new ReceiverDispatcher(game,queue); 
+		 sender = new SendDispatcher(controlS, dataS, servTotal);
 		new Thread(new ReceiverSenderChannelThread(queue, sender)).run(); 
 		
 		dataS.setMessageListener(receiver);

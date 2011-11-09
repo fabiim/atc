@@ -25,10 +25,11 @@ public class BootStrap {
 			AppiaService servTotal = new AppiaService("vsc+total");
 		    BlockSession controlS = (BlockSession)p.openControlSession(g);
 		    DataSession dataS = p.openDataSession(g);
+		    GameState game = new GameState(); 
 		    
 		    Screen scr = new Screen();
-		    Console con = new Console();
-		    GameState game = new GameState(); 
+		    Console con = new Console(game, ChannelCreator.getSenderDispatcher());
+		    
 		    game.addObserver(scr); 
 		    new Thread(scr).start();
 		    new Thread(con).start();
