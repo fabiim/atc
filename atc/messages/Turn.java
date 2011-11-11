@@ -3,9 +3,11 @@ package atc.messages;
 
 import java.io.Serializable;
 
-import atc.atc.*;
-
 public class Turn extends GameControlCommand implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -606418388536569309L;
 	private int direction;
 
 	public Turn(){

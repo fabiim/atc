@@ -34,9 +34,11 @@ public class ChannelCreator {
 		
 		
 		BlockingQueue<LpcMessage> queue = new LinkedBlockingQueue<LpcMessage>();
-		receiver = new ReceiverDispatcher(game,queue); 
+			receiver = new ReceiverDispatcher(game,queue, controlS); 
 		 sender = new SendDispatcher(controlS, dataS, servTotal);
-		new Thread(new ReceiverSenderChannelThread(queue, sender)).run(); 
+		 
+		(new Thread(new ReceiverSenderChannelThread(queue, sender))).start(); 
+		
 		
 		dataS.setMessageListener(receiver);
 		dataS.setExceptionListener(receiver);

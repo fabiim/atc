@@ -7,11 +7,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.lang.StringBuilder;
 
 
-public class Board{
+public class Board implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3860856643513379127L;
 	private int width;
 	private int height;
 	private Map<Character,Gate> ports;

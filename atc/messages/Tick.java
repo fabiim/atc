@@ -4,6 +4,11 @@ import java.io.Serializable;
 
 public class Tick extends Message implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3726517180977869874L;
+
 	public Tick(){
 		setOpcode(MessageOpCodes.TICK); 
 	}

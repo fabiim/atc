@@ -3,6 +3,10 @@ package atc.messages;
 import java.io.Serializable;
 
 public abstract class GameControlCommand extends Message implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5227739815069088639L;
 	private char planeId;
 
 	public char getPlaneId() {

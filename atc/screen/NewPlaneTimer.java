@@ -1,11 +1,12 @@
-package atc.atc;
+package atc.screen;
 
 import java.util.Random;
 import java.util.TimerTask;
 
+import atc.atc.GameState;
 import atc.dispatchers.SendDispatcher;
 
-public class NewPlaneTimer extends TimerTask{
+public class NewPlaneTimer extends TimerTask {
 
 	private final static int _newPlaneProbability = 100;
 	private GameState gs;
@@ -17,7 +18,7 @@ public class NewPlaneTimer extends TimerTask{
 	}
 	
 	public void run(){
-		// Dice roll para adicionar avi›es
+		// Dice roll para adicionar aviï¿½es
 		Random rand = new Random();
 		int roll = rand.nextInt(100);
 		// If the dice roll is favorable to adding a new plane

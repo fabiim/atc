@@ -4,6 +4,10 @@ import java.io.Serializable;
 
 import atc.messages.MessageOpCodes;
 public abstract class Message implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5322244347668027128L;
 	protected  MessageOpCodes  opcode;
 
 	public MessageOpCodes getOpcode() {

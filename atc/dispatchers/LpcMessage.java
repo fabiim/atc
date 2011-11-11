@@ -33,15 +33,14 @@ public  class LpcMessage{
 	
 	public class MembershipChange extends LpcMessage{ 
 		public final StateMessage m; 
-		public final SynchronousQueue<Integer> queue; 
 		
-		public MembershipChange(StateMessage m, SynchronousQueue<Integer> queue){
+		public MembershipChange(StateMessage m){
 			this.m = m; 
-			this.queue = queue; 
+			
 		}
 	
 		public void invokeMethod(SendDispatcher sender){
-			sender.membershipChange(m, queue); 
+			sender.membershipChange(m); 
 		}
 	
 	}

@@ -1,5 +1,6 @@
 package atc.atc;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -13,8 +14,18 @@ import atc.messages.StateMessage;
 import atc.messages.Tick;
 import atc.messages.Turn;
 
-public class GameState extends Observable {
+public class GameState extends Observable implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1341676252681668896L;
+
+	/**
+	 * 
+	 */
+
+
 	public final static String _defaultBoardFile = "default.map";
 
 	private Map<Character,Plane> frontBuffer; // The planes being shown on the screen.
@@ -204,14 +215,14 @@ public class GameState extends Observable {
 	synchronized private void processTick(Tick tick){
 		int x,y;
 
-		// Fazer as opera›es primeiro por causa dos observers no swapBuffers()
-		// Por os avi›es a marchar
+		// Fazer as operaï¿½ï¿½es primeiro por causa dos observers no swapBuffers()
+		// Por os aviï¿½es a marchar
 		for(Plane p : backBuffer.values())
 			p.move();
 
-		// Remover os avi›es que saem do mapa
+		// Remover os aviï¿½es que saem do mapa
 		boolean succ = false;
-		for(Plane p : backBuffer.values()){ // A diferena entre tirar logo quando ele chega na porta ou tirar depois de ter passado um epoch na porta
+		for(Plane p : backBuffer.values()){ // A diferenï¿½a entre tirar logo quando ele chega na porta ou tirar depois de ter passado um epoch na porta
 			x = p.getxCoord();
 			y = p.getyCoord();
 
@@ -230,14 +241,14 @@ public class GameState extends Observable {
 			}
 		}
 
-		// Remover avi›es que colidiram no epoch anterior - est‹o marcados com um '+'
+		// Remover aviï¿½es que colidiram no epoch anterior - estï¿½o marcados com um '+'
 		for(Plane p : frontBuffer.values())
 			if(p.getSymbol()=='+'){
 				backBuffer.remove(p.getID());
 				this.unsucessfulExits++;
 			}
 
-		// Testar colis›es
+		// Testar colisï¿½es
 		for(Plane p : backBuffer.values()){
 			x = p.getxCoord();
 			y = p.getyCoord();
@@ -247,7 +258,7 @@ public class GameState extends Observable {
 				if(p!=p2 && Math.abs(x-x2)<=1 && Math.abs(y-y2)<=1 && Math.abs(p.getAltitude()-p2.getAltitude())<=1000){
 					p.setSymbol('+');
 					p2.setSymbol('+');
-				}// N‹o fazer 'continue;' pq pode haver 3 ou mais avi›es a colidirem
+				}// Nï¿½o fazer 'continue;' pq pode haver 3 ou mais aviï¿½es a colidirem
 			}
 		}
 
@@ -344,15 +355,15 @@ public class GameState extends Observable {
 	synchronized private void processNewPlane(NewPlane plane){
 		char id = plane.getEntranceGateId();
 
-		// Verificar se h‡ "vaga" para um novo avi‹o
-		if(backBuffer.keySet().size()>=26) // S— podem haver no m‡ximo 26 avi›es
+		// Verificar se hï¿½ "vaga" para um novo aviï¿½o
+		if(backBuffer.keySet().size()>=26) // Sï¿½ podem haver no mï¿½ximo 26 aviï¿½es
 			return;
 
-		// Onde est‡ a porta?
+		// Onde estï¿½ a porta?
 		int x = board.getPorts().get(id).getxCoord();
 		int y = board.getPorts().get(id).getyCoord();
 
-		// Verificar se j‡ n‹o foi adicionado um avi‹o aquela porta neste epoch
+		// Verificar se jï¿½ nï¿½o foi adicionado um aviï¿½o aquela porta neste epoch
 		/*
 	 	for(Plane p : backBuffer.values())
 			if(p.getxCoord()==x && p.getyCoord()==y)
@@ -360,7 +371,7 @@ public class GameState extends Observable {
 		*/
 		if(actualAdds.containsKey(board.getPorts().get(id))) return;		
 
-		// Verificar se n‹o foi adicionado um avi‹o naquela porta com aquela altitude no epoch anterior
+		// Verificar se nï¿½o foi adicionado um aviï¿½o naquela porta com aquela altitude no epoch anterior
 		/*
 		for(Plane p : frontBuffer.values())
 			if(p.getxCoord()==x && p.getyCoord()==y && p.getAltitude()==plane.getHeight())
@@ -368,7 +379,7 @@ public class GameState extends Observable {
 		*/
 		if(previousAdds.containsKey(board.getPorts().get(id))) return;
 		
-		// OK, bora l‡ adicionar um avi‹o ent‹o!
+		// OK, bora lï¿½ adicionar um aviï¿½o entï¿½o!
 		char newID;
 		for(newID='A'; newID<='Z'; newID++)
 			if(!backBuffer.containsKey(newID))

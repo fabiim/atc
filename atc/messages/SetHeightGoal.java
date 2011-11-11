@@ -4,6 +4,10 @@ import java.io.Serializable;
 
 
 public class SetHeightGoal extends GameControlCommand implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6383329675044691057L;
 	private int objectiveHeight;
 	
 	public SetHeightGoal() {

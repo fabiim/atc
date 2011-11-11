@@ -1,7 +1,13 @@
 package atc.atc;
 
-public class Gate {
+import java.io.Serializable;
+
+public class Gate implements Serializable{
 		
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int xCoord;
 	private int yCoord;
 	private Character symbol;

@@ -25,6 +25,7 @@ import net.sf.jgcs.UnsupportedServiceException;
 import net.sf.jgcs.membership.BlockSession;
 
 import org.apache.*;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 class Ticker extends TimerTask{
 	private final SendDispatcher sender; 
@@ -49,7 +50,7 @@ public  class SendDispatcher{
 	private BlockSession controlChannel;
 	private DataSession dataChannel;
 	private net.sf.jgcs.Service commandService; 
-	private Logger logger = Logger.getLogger("SendDispatcher"); 
+	private Logger logger = Logger.getLogger(SendDispatcher.class); 
 	
 	private Lock  lock = new ReentrantLock(); // acquire to do anything. Sequential behaviour for now.
 
@@ -64,9 +65,9 @@ public  class SendDispatcher{
 		 this.controlChannel = controlChannel; 
 		 this.dataChannel = dataChannel; 
 		 this.commandService = gameService; 
+		 logger.setLevel(Level.INFO); 
 	 }
 
-	 
 	 public void send(Message cmd){
 		 lock.lock();
 		 	if (can_send_messages) {
@@ -78,7 +79,6 @@ public  class SendDispatcher{
 		 		}
 		 	}		 	
 	 }
-	 
 	 
 	 public void block(){
 		 System.err.println("blocking"); 
@@ -111,26 +111,26 @@ public  class SendDispatcher{
 	  * @param state
 	  */
 
-	 public void membershipChange(StateMessage msg, SynchronousQueue<Integer> queue){
+	 public void membershipChange(StateMessage msg){
 		int n;
-		logger.debug("membershipChange warning");
-		System.err.println("Chaning members"); 
+		logger.info("membershipChange warning");
 		try {
-			n = controlChannel.getMembership().getMembershipList().size();
 			//Check to see if we are the leader
 			// TODO - use the same membership
-			if (controlChannel.getMembership().getCoordinatorRank() == controlChannel.getMembership().getLocalRank() ) {
+			//TODO - think about deadlocks on this. Other thread invoking membership change at the same time.
+			int coordinator_rank, local_rank;
+			synchronized(controlChannel){
+				coordinator_rank = controlChannel.getMembership().getCoordinatorRank(); 
+				local_rank = controlChannel.getMembership().getLocalRank(); 
+			}
+			if (coordinator_rank == local_rank){
 				CreateTick(); 
 			}
-			
 		} catch (NotJoinedException e) {
-			logger.fatal("membershipChange could not get membership list : Should exit the program"); 
+			logger.fatal("Could not check membership"); 
 			return ; 
 		}
-	
-		
-	 ProducerConsumer.produce(queue, n); 
-	lock.lock();
+		lock.lock();
 		 try{
 			 //TODO - clean me up scotty. broadcastMessage checks can_send_messages 
 			 //We can not send messages until we receive all states. 
@@ -177,6 +177,7 @@ public  class SendDispatcher{
 			m = dataChannel.createMessage();			
 			payload = SerializableInterface.objectToByte(command);
 			m.setPayload(payload);
+			logger.info("Sending message:" + command.toString()); 
 			dataChannel.multicast(m, commandService, null, (net.sf.jgcs.Annotation[]) null);
 		} catch (Exception e){
 			System.err.println(e.getMessage()); 

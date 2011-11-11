@@ -7,7 +7,9 @@ import net.sf.jgcs.ExceptionListener;
 import net.sf.jgcs.JGCSException;
 import net.sf.jgcs.Message;
 import net.sf.jgcs.MessageListener;
+import net.sf.jgcs.NotJoinedException;
 import net.sf.jgcs.membership.BlockListener;
+import net.sf.jgcs.membership.BlockSession;
 import net.sf.jgcs.membership.MembershipListener;
 import atc.atc.*;
 import atc.messages.StateMessage;
@@ -38,18 +40,19 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 	private boolean blocked_state = false; 
 	private Integer received_states = null; 
 	private Integer membership_size = null;
-	private Logger logger = Logger.getLogger("ReceiverDispatcher");
+	private Logger logger = Logger.getLogger(ReceiverDispatcher.class);
+	private BlockSession control;
 
-	
-	protected ReceiverDispatcher(GameState game, BlockingQueue<LpcMessage> queue) {
+	protected ReceiverDispatcher(GameState game, BlockingQueue<LpcMessage> queue, BlockSession controlS) {
+		logger.setLevel(Level.INFO); 
 		this.game = game; 
-		this.queue = queue; 
+		this.queue = queue;
+		this.control = controlS; 
 	}
-	
-	
 	
 	@Override
 	public void onBlock(){
+		logger.info("Blocking"); 
 		LpcMessage.Block m = lpcFactory.new Block(); 
 		ProducerConsumer.produce(queue, m); 
 
@@ -66,19 +69,27 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 	
 	@Override
 	public void onMembershipChange() {
+		logger.info("Membership changing... "); 
 		StateMessage sm = new StateMessage(game);
 		//This is important. A SyncQueue will hold APPIA (the thread running this method) until the item is consumed in the queue.   
-		SynchronousQueue<Integer> qi = new SynchronousQueue<Integer>();
-		LpcMessage.MembershipChange lm = lpcFactory.new MembershipChange(sm,qi); 
+		LpcMessage.MembershipChange lm = lpcFactory.new MembershipChange(sm); 
+		
+		synchronized(control){
+			try {
+				membership_size = control.getMembership().getMembershipList().size();
+			} catch (NotJoinedException e) {
+				logger.fatal("Not joined ");
+				//TODO - should end here now. 
+				return; 
+			} 
+		}
 		
 		ProducerConsumer.produce(queue,lm); // produced LPC message containing above payload. 
-		
+		logger.info("Produced LPC message"); 
 		//Now wait for someone to produce answer on qi.
+				
 
-		
-		//ProducerConsumer.consume(consume); 
-		
-		membership_size = ProducerConsumer.consume(qi);
+		logger.info("consumed the membership size:" + membership_size ); 
 		received_states = new Integer(0); 
 		resolving_states_state = true;
 		blocked_state = false; 
@@ -95,7 +106,7 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 	public Object onMessage(Message msg){
 		atc.messages.Message  game_message = null; 
 		try {
-			  game_message	= (atc.messages.Message) SerializableInterface.byteToObject(msg.getPayload());
+			game_message	= (atc.messages.Message) SerializableInterface.byteToObject(msg.getPayload());
 			game.processMsg(game_message); 
 		} catch (Exception e) {
 			logger.fatal("Could not deserialize received message");

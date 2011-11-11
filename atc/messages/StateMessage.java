@@ -5,6 +5,10 @@ import java.io.Serializable;
 import atc.atc.GameState;
 
 public class StateMessage extends Message implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 840000550822132018L;
 	private atc.atc.GameState game;
 
 	public StateMessage(){

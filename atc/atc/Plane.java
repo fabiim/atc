@@ -1,6 +1,16 @@
 package atc.atc;
 
-public class Plane {
+import java.io.Serializable;
+
+public class Plane implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7475859020747234664L;
+	/**
+	 * 
+	 */
 
 	private Character ID;
 	private Gate exitGate;

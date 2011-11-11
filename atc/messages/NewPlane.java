@@ -3,6 +3,10 @@ package atc.messages;
 import java.io.Serializable;
 
 public class NewPlane extends GameControlCommand implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6047038702018350365L;
 	private char entranceGateId; 
 	private char exitGateID; 
 	private int direction; 
