@@ -69,31 +69,24 @@ public  class SendDispatcher{
 	 }
 
 	 public void send(Message cmd){
-		 
 		 lock.lock();
-		 
+		 try{
 		 	if (can_send_messages) {
-		 		try{
-		 			logger.debug("Sending message"); 
-		 			broadcastMessage(cmd);  
-		 		}
-		 		finally{
-		 			lock.unlock();
-		 			
-		 		}
-		 	}		 	
+		 			broadcastMessage(cmd);
+		 	}
+		 }finally{
+		 	lock.unlock();
+		}
 	 }
 	 
 	 public void block(){
 		 logger.info("going to block()...");
 		 
 		 lock.lock();
-		 
 		 try{
 		 		can_send_messages = false;
-		 		
 		 		controlChannel.blockOk(); // tell appia we shut up.
-		 		logger.info("...sended block()"); 
+		 
 		 		// shutdown possible ticker
 		 		if (ticker != null){ 
 		 			ticker.cancel(); 
@@ -110,6 +103,8 @@ public  class SendDispatcher{
 		 finally{
 			 lock.unlock();
 		 }
+		 
+		 logger.info("...sended block()"); 
 	 }
 	 
 	 /**
@@ -120,13 +115,14 @@ public  class SendDispatcher{
 	  */
 
 	 public void membershipChange(StateMessage msg){
-		int n;
-		logger.info("membershipChange warning");
+		
+		logger.info("membershipChange warning...");
 		try {
 			//Check to see if we are the leader
 			// TODO - use the same membership
 			//TODO - think about deadlocks on this. Other thread invoking membership change at the same time.
 			int coordinator_rank, local_rank;
+			logger.info("starting synced access to membership ranks to detect if we are the leader..."); 
 			synchronized(controlChannel){
 				coordinator_rank = controlChannel.getMembership().getCoordinatorRank(); 
 				local_rank = controlChannel.getMembership().getLocalRank(); 
@@ -134,12 +130,14 @@ public  class SendDispatcher{
 			if (coordinator_rank == local_rank){
 				CreateTick(); 
 			}
+			
+			
 		} catch (NotJoinedException e) {
 			logger.fatal("Could not check membership"); 
 			return ; 
 		}
+		logger.info("..finished synced access to membership ranks"  ); 
 		lock.lock();
-
 		 try{
 			 //TODO - clean me up scotty. broadcastMessage checks can_send_messages 
 			 //We can not send messages until we receive all states. 
@@ -148,32 +146,31 @@ public  class SendDispatcher{
 			 can_send_messages = false; 
 		 }finally{
 			 lock.unlock();
-
 		 }
-		 
-		 System.err.println("success"); 
+		logger.info("... finished membership change broadcast of state"); 
 	 }
 	 
 	 public void unBlock(){
-		 System.err.println("unblocking"); 
+		 logger.info("going to unblock the condition variable");
 		 lock.lock(); 
-		 
 		 try{
 			 can_send_messages = true;
 		 }
 		 finally{
 			 lock.unlock();
-		
 		 }
+		 logger.info("unblocked");
 	 }
 
 	 	 /*
 	 	  * Use this method to activate the leader mode in process. 
 	 	  */
 	 	public  void CreateTick(){
+	 		logger.info("Creating ticker..."); 
 	 		System.err.println("being leader"); 
 	 		ticker = new Timer();
 	 		ticker.scheduleAtFixedRate(new Ticker(this), SendDispatcher.TICK_RATE_MSS, SendDispatcher.TICK_RATE_MSS); 
+	 		logger.info("... Ticker created"); 
 	 	}
 	
 	 	
@@ -189,15 +186,15 @@ public  class SendDispatcher{
 			m = dataChannel.createMessage();			
 			payload = SerializableInterface.objectToByte(command);
 			m.setPayload(payload);
-			logger.info("Sending message:" + command.toString()); 
+			logger.info("Sending message:" + command.toString() + "..."); 
 			dataChannel.multicast(m, commandService, null, (net.sf.jgcs.Annotation[]) null);
 		} catch (Exception e){
 			System.err.println(e.getMessage()); 
 			e.printStackTrace(System.err);
-		}
-		finally{
+		}finally{
 			lock.unlock(); 
 		}
+		logger.info("...message sent"); 
 	 }
 	 
     }

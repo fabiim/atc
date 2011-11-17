@@ -54,6 +54,7 @@ public class Screen implements Observer,Runnable{
 		
 		// Draw planes
 		Map<Character,Plane> planes = (Map<Character,Plane>) arg;
+		
 		for(Plane p : planes.values())
 			if(p.getSymbol()=='+')
 				term.setData(p.getxCoord(), p.getyCoord(), Terminal.RED, Terminal.WHITE, '+');

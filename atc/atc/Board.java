@@ -78,8 +78,8 @@ public class Board implements Serializable{
 		// Verificar se as portas est�o em coordenadas v�lidas
 		for(Map.Entry<Character, Gate> p : ports.entrySet()){
 			int x=p.getValue().getxCoord(),y=p.getValue().getyCoord();
-			System.out.println(width+" "+height);
-			System.out.println(x+" "+y);
+			//System.out.println(width+" "+height);
+			//System.out.println(x+" "+y);
 			if((x==0&&y==0) ||
 				(x==width-1&&y==height-1) ||
 				(x==0&&y==height-1) ||
@@ -139,7 +139,8 @@ public class Board implements Serializable{
 
 	@Override
 	public String toString() {
-		StringBuilder s = new StringBuilder();
+		return "A BOARD"; 
+		/*StringBuilder s = new StringBuilder();
 		int x,y;
 		boolean portFound;
 		
@@ -190,6 +191,7 @@ public class Board implements Serializable{
 			if(!portFound) s.append('-');
 		}
 		return(s.toString());
+		*/
 	}
 
 	@Override

@@ -222,7 +222,13 @@ public class GameState extends Observable implements Serializable{
 
 		// Remover os avi�es que saem do mapa
 		boolean succ = false;
-		for(Plane p : backBuffer.values()){ // A diferen�a entre tirar logo quando ele chega na porta ou tirar depois de ter passado um epoch na porta
+		Map<Character, Plane> bb = new HashMap<Character,Plane>(); 
+		
+		for (Plane p : backBuffer.values()){
+			bb.put(p.getID(), p.clone()); 
+		}
+		
+		for(Plane p : bb.values()){ // A diferen�a entre tirar logo quando ele chega na porta ou tirar depois de ter passado um epoch na porta
 			x = p.getxCoord();
 			y = p.getyCoord();
 
@@ -237,6 +243,7 @@ public class GameState extends Observable implements Serializable{
 					succ=false;
 				else
 					this.unsucessfulExits++;	
+			
 				backBuffer.remove(p.getID());
 			}
 		}

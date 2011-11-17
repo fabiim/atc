@@ -46,7 +46,9 @@ public class BootStrap {
 		    ChannelCreator.CreateChannel(game, servTotal, controlS, dataS);
 		    controlS.join();
 		    Screen scr = new Screen();
+		    
 		    game.addObserver(scr);
+		    
 		    Console con = new Console(game, ChannelCreator.getSenderDispatcher());
 		    new Thread(scr).start();
 		    new Thread(con).start();

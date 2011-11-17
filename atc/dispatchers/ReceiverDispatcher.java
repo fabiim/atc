@@ -71,6 +71,7 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 	@Override
 	public void onMembershipChange() {
 		logger.info("Membership changing... "); 
+		
 		StateMessage sm = new StateMessage(game);
 		//This is important. A SyncQueue will hold APPIA (the thread running this method) until the item is consumed in the queue.   
 		LpcMessage.MembershipChange lm = lpcFactory.new MembershipChange(sm); 
@@ -85,9 +86,7 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 			} 
 		}
 		
-		ProducerConsumer.produce(queue,lm); // produced LPC message containing above payload. 
-		logger.info("Produced LPC message"); 
-		//Now wait for someone to produce answer on qi.
+		ProducerConsumer.produce(queue,lm); // produced LPC message containing above payload.
 				
 
 		logger.info("consumed the membership size:" + membership_size ); 
@@ -105,10 +104,10 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 	
 	@Override
 	public Object onMessage(Message msg){
-		atc.messages.Message  game_message = null; 
+		atc.messages.Message  game_message = null;
+		logger.info("Received message..."); 
 		try {
 			game_message	= (atc.messages.Message) SerializableInterface.byteToObject(msg.getPayload());
-
 		} catch (Exception e) {
 			logger.fatal("Could not deserialize received message");
 			
@@ -116,7 +115,10 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 			logger.fatal(e.getMessage() + e.getStackTrace());
 			return null; 
 		} 
+		logger.info("Going to process message: "+ game_message.toString()); 
+		
 		game.processMsg(game_message); 		
+		
 		if (resolving_states_state){
 			if (game_message instanceof StateMessage){
 				//we accept those messages in this state
@@ -130,7 +132,11 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 				//check to see if it is the last message
 				received_states ++; 
 				if (received_states == membership_size) {
-					resolving_states_state = false; 
+					resolving_states_state = false;
+					
+					//We have finished receiving all the states from the players. We MUST warn senderDispatcher that it is ok to send messages
+					 LpcMessage.UnBlock  m = lpcFactory.new UnBlock() ;
+					 ProducerConsumer.produce(queue, m); 
 				}
 			}
 		}
