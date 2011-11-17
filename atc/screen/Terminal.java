@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Collections;
 
+
 /** Terminal provides a simple color VT-52 terminal component.
   *
   * This version extends Canvas, so it will be a heavyweight component and
@@ -314,8 +315,16 @@ private byte effects_;
 
 private Image buffer_;
 
+private static Terminal term=null; 
+public static Terminal getTerminal(){
+	
+	if (term == null){
+		term = new Terminal(); 
+	}
+	return term; 
+}
 /** Creates a new terminal.  */
-public Terminal()
+private Terminal()
 {
     line_ = new TerminalLine[HEIGHT];
     for(int y = 0; y < HEIGHT; ++y) {

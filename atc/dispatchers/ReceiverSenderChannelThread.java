@@ -31,7 +31,6 @@ public class ReceiverSenderChannelThread implements Runnable{
 		LpcMessage  bucket = null;  
 		while(true){
 			bucket = ProducerConsumer.consume(queue);
-			logger.info("Consumed another method call"); 
 			// Consume the bucket -> Invoke methods on sender.
 			bucket.invokeMethod(sender); 
 		}

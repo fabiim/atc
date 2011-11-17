@@ -25,5 +25,4 @@ public class NewPlaneTimer extends TimerTask {
 		if(roll<_newPlaneProbability)
 			sd.send(gs.createRandomPlane());
 	}
-	
 }

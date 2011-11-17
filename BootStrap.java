@@ -31,9 +31,7 @@ public class BootStrap {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} 
-		logger.setLevel(Level.INFO); 
-		BasicConfigurator.configure(); 
-		logger.info("Starting the bootstrap ");
+		
 		try {
 		    AppiaProtocolFactory pf=new AppiaProtocolFactory();
 		    Protocol p=pf.createProtocol();

@@ -34,6 +34,7 @@ public class Screen implements Observer,Runnable{
 
 	public Screen(){
 		map = Board.readMap(GameState._defaultBoardFile);
+		term = Terminal.getTerminal();
 	}
 	
 	public Screen(String filename){

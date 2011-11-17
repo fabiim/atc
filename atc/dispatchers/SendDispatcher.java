@@ -42,7 +42,7 @@ class Ticker extends TimerTask{
 }
 
 public  class SendDispatcher{
-	private static  long TICK_RATE_MSS = 100;
+	private static  long TICK_RATE_MSS = 1000;
 	public static void setTickRate(long rate) { TICK_RATE_MSS = rate ;}
 	public static long getTickRate(){ return TICK_RATE_MSS ; }
 	
@@ -52,7 +52,7 @@ public  class SendDispatcher{
 	private net.sf.jgcs.Service commandService; 
 	private Logger logger = Logger.getLogger(SendDispatcher.class); 
 	
-	private Lock  lock = new ReentrantLock(); // acquire to do anything. Sequential behaviour for now.
+	private Lock  lock = new ReentrantLock(true); // acquire to do anything. Sequential behaviour for now.
 
 	 //INVARIANT: when true no messages are send by this object.
 	private Boolean can_send_messages; // Refers to the blocked state on view synchronous protocol. 
@@ -64,34 +64,41 @@ public  class SendDispatcher{
 	 protected SendDispatcher(BlockSession controlChannel, DataSession dataChannel, net.sf.jgcs.Service gameService) {
 		 this.controlChannel = controlChannel; 
 		 this.dataChannel = dataChannel; 
-		 this.commandService = gameService; 
-		 logger.setLevel(Level.INFO); 
+		 this.commandService = gameService;
+		 logger.setLevel(Level.DEBUG); 
 	 }
 
 	 public void send(Message cmd){
+		 
 		 lock.lock();
+		 
 		 	if (can_send_messages) {
 		 		try{
+		 			logger.debug("Sending message"); 
 		 			broadcastMessage(cmd);  
 		 		}
 		 		finally{
-		 			lock.unlock(); 
+		 			lock.unlock();
+		 			
 		 		}
 		 	}		 	
 	 }
 	 
 	 public void block(){
-		 System.err.println("blocking"); 
-		 lock.lock(); 
+		 logger.info("going to block()...");
+		 
+		 lock.lock();
+		 
 		 try{
 		 		can_send_messages = false;
+		 		
 		 		controlChannel.blockOk(); // tell appia we shut up.
-
+		 		logger.info("...sended block()"); 
 		 		// shutdown possible ticker
 		 		if (ticker != null){ 
 		 			ticker.cancel(); 
 		 		}
-		 		ticker = null; 
+		 		ticker = null;
 		 		
 		 } catch (NotJoinedException e) {
 			// TODO Auto-generated catch block
@@ -104,6 +111,7 @@ public  class SendDispatcher{
 			 lock.unlock();
 		 }
 	 }
+	 
 	 /**
 	  * Inform new membership. 
 	  * From now on only ticks messages are received. No messages are sended.
@@ -131,6 +139,7 @@ public  class SendDispatcher{
 			return ; 
 		}
 		lock.lock();
+
 		 try{
 			 //TODO - clean me up scotty. broadcastMessage checks can_send_messages 
 			 //We can not send messages until we receive all states. 
@@ -138,7 +147,8 @@ public  class SendDispatcher{
 			 broadcastMessage(msg); 
 			 can_send_messages = false; 
 		 }finally{
-			 lock.unlock(); 
+			 lock.unlock();
+
 		 }
 		 
 		 System.err.println("success"); 
@@ -147,13 +157,14 @@ public  class SendDispatcher{
 	 public void unBlock(){
 		 System.err.println("unblocking"); 
 		 lock.lock(); 
+		 
 		 try{
 			 can_send_messages = true;
 		 }
 		 finally{
 			 lock.unlock();
+		
 		 }
-		 logger.debug("unblocked"); 
 	 }
 
 	 	 /*
@@ -170,7 +181,8 @@ public  class SendDispatcher{
 		 net.sf.jgcs.Message m;
 		 byte[] payload;
 		 try {
-			lock.lock(); 
+			lock.lock();
+
 				if (!can_send_messages) {
 					return; // Discards all command messages when in blocked state.   
 				}

@@ -52,13 +52,14 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 	
 	@Override
 	public void onBlock(){
-		logger.info("Blocking"); 
+		logger.info("Received onBlock..."); 
 		LpcMessage.Block m = lpcFactory.new Block(); 
 		ProducerConsumer.produce(queue, m); 
 
 		//TODO - block state never read locally
 		blocked_state = true;
-		resolving_states_state = false;  
+		resolving_states_state = false; 
+		logger.info("...returning control of execution to appia" );
 	}
 	
 	@Override
@@ -107,12 +108,15 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 		atc.messages.Message  game_message = null; 
 		try {
 			game_message	= (atc.messages.Message) SerializableInterface.byteToObject(msg.getPayload());
-			game.processMsg(game_message); 
+
 		} catch (Exception e) {
 			logger.fatal("Could not deserialize received message");
-			logger.fatal(e.getMessage() + e.getStackTrace()); 
+			
+			e.printStackTrace(); 
+			logger.fatal(e.getMessage() + e.getStackTrace());
+			return null; 
 		} 
-		
+		game.processMsg(game_message); 		
 		if (resolving_states_state){
 			if (game_message instanceof StateMessage){
 				//we accept those messages in this state
