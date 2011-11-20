@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 
 import atc.messages.Message;
 import atc.messages.NewPlane;
@@ -222,17 +224,13 @@ public class GameState extends Observable implements Serializable{
 
 		// Remover os avi�es que saem do mapa
 		boolean succ = false;
-		Map<Character, Plane> bb = new HashMap<Character,Plane>(); 
+		Set<Character> remover = new TreeSet<Character>();
 		
-		for (Plane p : backBuffer.values()){
-			bb.put(p.getID(), p.clone()); 
-		}
-		
-		for(Plane p : bb.values()){ // A diferen�a entre tirar logo quando ele chega na porta ou tirar depois de ter passado um epoch na porta
+		for(Plane p : backBuffer.values()){ // A diferen�a entre tirar logo quando ele chega na porta ou tirar depois de ter passado um epoch na porta
 			x = p.getxCoord();
 			y = p.getyCoord();
 
-			if(x==0 || y==0 || y==board.getHeight() || x==board.getWidth()){
+			if(x<=0 || y<=0 || y>=board.getHeight() || x>=board.getWidth()){
 				for(Gate g : board.getPorts().values())
 					if(g.getxCoord()==x && g.getyCoord()==y && p.getExitAltitude()==p.getAltitude()){
 						this.successfulExits++;
@@ -243,10 +241,11 @@ public class GameState extends Observable implements Serializable{
 					succ=false;
 				else
 					this.unsucessfulExits++;	
-			
-				backBuffer.remove(p.getID());
+				remover.add(p.getID());
 			}
 		}
+		for(Character id : remover)
+			backBuffer.remove(id);
 
 		// Remover avi�es que colidiram no epoch anterior - est�o marcados com um '+'
 		for(Plane p : frontBuffer.values())
