@@ -55,12 +55,12 @@ public class Screen implements Observer,Runnable{
 		// Draw planes
 		Map<Character,Plane> planes = (Map<Character,Plane>) arg;
 		
-		System.out.println("----------DESENHAR AVIOES----------");
+		//System.out.println("----------DESENHAR AVIOES----------");
 		for(Plane p : planes.values())
 			if(p.getSymbol()=='+')
 				term.setData(p.getxCoord(), p.getyCoord(), Terminal.RED, Terminal.WHITE, '+');
 			else{
-				System.out.println("Avi‹o: "+p.getSymbol()+" ( "+p.getxCoord()+" , "+p.getyCoord()+" )");
+				//System.out.println("Avi‹o: "+p.getSymbol()+" ( "+p.getxCoord()+" , "+p.getyCoord()+" )");
 				term.setData(p.getxCoord(), p.getyCoord(), p.getSymbol());
 			}
 		// Render
