@@ -201,9 +201,11 @@ public class GameState extends Observable implements Serializable{
 			processStateMsg((StateMessage) msg);
 			break;
 		case TURN:
+			
 			processTurn((Turn) msg);
 			break;
 		case SET_HEIGHT_GOAL:
+			
 			processHeightGoal((SetHeightGoal) msg);
 			break;
 		case NEW_PLANE:
