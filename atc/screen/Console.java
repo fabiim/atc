@@ -23,6 +23,7 @@ public class Console implements Runnable{
 		timer=new Timer();
 		task=new NewPlaneTimer(gs,sd);
 		timer.scheduleAtFixedRate(task, 1000, 1000);
+		this.sd = sd;
 	}
 	
 	public void run(){

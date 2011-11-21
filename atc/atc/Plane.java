@@ -219,12 +219,13 @@ public class Plane implements Serializable{
 			altitude-=1000;
 	
 		// Andar
+		// As coordenadas em yy sao trocadas por causa dos eixos da classe Terminal
 		switch(direction){
 			case 1:
-				yCoord++;
+				yCoord--;
 				break;
 			case 2:
-				yCoord++;
+				yCoord--;
 				xCoord++;
 				break;
 			case 3:
@@ -232,21 +233,21 @@ public class Plane implements Serializable{
 				break;
 			case 4:
 				xCoord++;
-				yCoord--;
+				yCoord++;
 				break;
 			case 6:
-				yCoord--;
+				yCoord++;
 				break;
 			case 7:
 				xCoord--;
-				yCoord--;
+				yCoord++;
 				break;
 			case 8:
 				xCoord--;
 				break;
 			case 9:
 				xCoord--;
-				yCoord++;
+				yCoord--;
 				break;
 			default:
 				break;

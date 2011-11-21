@@ -232,7 +232,8 @@ public class GameState extends Observable implements Serializable{
 			x = p.getxCoord();
 			y = p.getyCoord();
 
-			if(x==0 || y==0 || y==board.getHeight() || x==board.getWidth()){
+			//TODO e preciso por os gajos a entrar na perpendicular
+			if(x<=0 || y<=0 || y>=board.getHeight() || x>=board.getWidth()){
 				for(Gate g : board.getPorts().values())
 					if(g.getxCoord()==x && g.getyCoord()==y && p.getExitAltitude()==p.getAltitude()){
 						this.successfulExits++;
@@ -414,8 +415,8 @@ public class GameState extends Observable implements Serializable{
 		previousAdds = new HashMap<Gate,Integer>();
 		for(Map.Entry<Character, Plane> e : backBuffer.entrySet()){
 			char key = e.getKey().charValue();
-			Plane p = e.getValue();
-			frontBuffer.put(key,p.clone());
+			Plane p = e.getValue().clone();
+			frontBuffer.put(key,p);
 			ret.put(key, p.clone());
 		}
 		actualAdds = new HashMap<Gate,Integer>();

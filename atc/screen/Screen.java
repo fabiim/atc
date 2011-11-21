@@ -60,7 +60,7 @@ public class Screen implements Observer,Runnable{
 			if(p.getSymbol()=='+')
 				term.setData(p.getxCoord(), p.getyCoord(), Terminal.RED, Terminal.WHITE, '+');
 			else{
-				//System.out.println("Avi‹o: "+p.getSymbol()+" ( "+p.getxCoord()+" , "+p.getyCoord()+" )");
+				//if(p.getSymbol()=='A') System.out.println("Avi‹o: "+p.getSymbol()+" ( "+p.getxCoord()+" , "+p.getyCoord()+" , " + p.getAltitude() +" )");
 				term.setData(p.getxCoord(), p.getyCoord(), p.getSymbol());
 			}
 		// Render
