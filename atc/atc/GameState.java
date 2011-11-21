@@ -230,7 +230,7 @@ public class GameState extends Observable implements Serializable{
 			x = p.getxCoord();
 			y = p.getyCoord();
 
-			if(x<=0 || y<=0 || y>=board.getHeight() || x>=board.getWidth()){
+			if(x==0 || y==0 || y==board.getHeight() || x==board.getWidth()){
 				for(Gate g : board.getPorts().values())
 					if(g.getxCoord()==x && g.getyCoord()==y && p.getExitAltitude()==p.getAltitude()){
 						this.successfulExits++;
@@ -314,7 +314,14 @@ public class GameState extends Observable implements Serializable{
 		do
 			di=rand.nextInt(10);
 		while(di==5);
-
+		
+		System.out.println("---NOVO AVIAO");
+		System.out.println("PortaEntrada: "+ge.getSymbol()+ " - ( "+ge.getxCoord()+" , "+ ge.getyCoord()+" )");
+		System.out.println("PortaSaida: "+eg.getSymbol()+ " - ( "+eg.getxCoord()+" , "+ eg.getyCoord()+" )");
+		System.out.println("Direccao: "+di);
+		System.out.println("Direccao: "+al);
+		System.out.println("Direccao: "+ao);
+		
 		// Return the new plane
 		return(new NewPlane(ge.getSymbol(), eg.getSymbol(), di, al, ao));		
 	}
