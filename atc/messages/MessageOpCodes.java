@@ -6,5 +6,5 @@ public enum MessageOpCodes {
 	TURN,   // GameControl Command. Turn the given plane direction 
 	SET_HEIGHT_GOAL, // Set new Objective Height on give plane 
 	NEW_PLANE, // Introduce New Plane on the map. 
-
+	CHAT, // Chat message
 }

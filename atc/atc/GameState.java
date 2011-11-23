@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
+import atc.messages.Chat;
 import atc.messages.Message;
 import atc.messages.NewPlane;
 import atc.messages.SetHeightGoal;
@@ -33,7 +34,7 @@ public class GameState extends Observable implements Serializable{
 	private Map<Character,Plane> frontBuffer; // The planes being shown on the screen.
 	private Map<Character,Plane> backBuffer; // The new state of the game, still being processed.
 	private int successfulExits;
-	private int unsucessfulExits;
+	private int unsuccessfulExits;
 	private int epoch;
 	private Board board;
 	private Map<Gate,Integer> previousAdds;
@@ -53,7 +54,7 @@ public class GameState extends Observable implements Serializable{
 		previousAdds = new HashMap<Gate,Integer>();
 		actualAdds = new HashMap<Gate,Integer>();
 		successfulExits = 0;
-		unsucessfulExits = 0;
+		unsuccessfulExits = 0;
 		board = Board.readMap(_defaultBoardFile);
 	}
 	
@@ -63,7 +64,7 @@ public class GameState extends Observable implements Serializable{
 		previousAdds = new HashMap<Gate,Integer>();
 		actualAdds = new HashMap<Gate,Integer>();
 		successfulExits = 0;
-		unsucessfulExits = 0;
+		unsuccessfulExits = 0;
 		board = Board.readMap(filename);
 	}
 
@@ -78,7 +79,7 @@ public class GameState extends Observable implements Serializable{
 		for(Map.Entry<Character, Plane> e : backBuffer.entrySet())
 			this.backBuffer.put(e.getKey(), e.getValue());
 		this.successfulExits = successfulExits;
-		this.unsucessfulExits = unsucessfulExits;
+		this.unsuccessfulExits = unsucessfulExits;
 		this.epoch = epoch;
 		this.board = board.clone();
 		
@@ -101,7 +102,7 @@ public class GameState extends Observable implements Serializable{
 			backBuffer.put(e.getKey(), e.getValue());
 
 		this.successfulExits = gameState.getSuccessfulExits();
-		this.unsucessfulExits = gameState.getUnsucessfulExits();
+		this.unsuccessfulExits = gameState.getUnsucessfulExits();
 		this.epoch = gameState.getEpoch();
 		this.board = gameState.getBoard();
 		
@@ -177,11 +178,11 @@ public class GameState extends Observable implements Serializable{
 	}
 
 	synchronized public int getUnsucessfulExits() {
-		return unsucessfulExits;
+		return unsuccessfulExits;
 	}
 
 	synchronized public void setUnsucessfulExits(int unsucessfulExits) {
-		this.unsucessfulExits = unsucessfulExits;
+		this.unsuccessfulExits = unsucessfulExits;
 	}
 
 	synchronized public int getEpoch() {
@@ -201,19 +202,24 @@ public class GameState extends Observable implements Serializable{
 			processStateMsg((StateMessage) msg);
 			break;
 		case TURN:
-			
 			processTurn((Turn) msg);
 			break;
-		case SET_HEIGHT_GOAL:
-			
+		case SET_HEIGHT_GOAL:		
 			processHeightGoal((SetHeightGoal) msg);
 			break;
 		case NEW_PLANE:
 			processNewPlane((NewPlane) msg);
 			break;
+		case CHAT:
+			processChat((Chat) msg);
+			break;
 		default:
 			break;
 		}
+	}
+
+	private void processChat(Chat msg) {
+		System.out.println(msg.getText());
 	}
 
 	synchronized private void processTick(Tick tick){
@@ -232,7 +238,6 @@ public class GameState extends Observable implements Serializable{
 			x = p.getxCoord();
 			y = p.getyCoord();
 
-			//TODO e preciso por os gajos a entrar na perpendicular
 			if(x<=0 || y<=0 || y>=board.getHeight() || x>=board.getWidth()){
 				for(Gate g : board.getPorts().values())
 					if(g.getxCoord()==x && g.getyCoord()==y && p.getExitAltitude()==p.getAltitude()){
@@ -243,7 +248,7 @@ public class GameState extends Observable implements Serializable{
 				if(succ)
 					succ=false;
 				else
-					this.unsucessfulExits++;	
+					this.unsuccessfulExits++;	
 				remover.add(p.getID());
 			}
 		}
@@ -254,7 +259,7 @@ public class GameState extends Observable implements Serializable{
 		for(Plane p : frontBuffer.values())
 			if(p.getSymbol()=='+'){
 				backBuffer.remove(p.getID());
-				this.unsucessfulExits++;
+				this.unsuccessfulExits++;
 			}
 
 		// Testar colis�es
@@ -291,8 +296,11 @@ public class GameState extends Observable implements Serializable{
 		Gate eg = board.getPorts().values().toArray(new Gate[26])[rand.nextInt(board.getPorts().size())].clone();
 		
 		// Get an entrance gate
-		Gate ge = board.getPorts().values().toArray(new Gate[26])[rand.nextInt(board.getPorts().size())].clone();
-		
+		Gate ge;
+		do
+			ge = board.getPorts().values().toArray(new Gate[26])[rand.nextInt(board.getPorts().size())].clone();
+		while(ge.getSymbol()==eg.getSymbol());
+			
 		// Exit altitude
 		int ea = rand.nextInt(9000);
 		if(ea<4000)
@@ -309,24 +317,19 @@ public class GameState extends Observable implements Serializable{
 		else
 			al=9000;
 		
-		// Altitude objectivo
-		int ao=al;
-		
-		// Get direction
-		int di;
-		do
-			di=rand.nextInt(10);
-		while(di==5);
-		/*
-		System.out.println("---NOVO AVIAO");
-		System.out.println("PortaEntrada: "+ge.getSymbol()+ " - ( "+ge.getxCoord()+" , "+ ge.getyCoord()+" )");
-		System.out.println("PortaSaida: "+eg.getSymbol()+ " - ( "+eg.getxCoord()+" , "+ eg.getyCoord()+" )");
-		System.out.println("Direccao: "+di);
-		System.out.println("Direccao: "+al);
-		System.out.println("Direccao: "+ao);
-		*/
+		// Set direction
+		int di=1;
+		if(ge.getxCoord()==0 && ge.getyCoord()==0) di=4;
+		else if(ge.getxCoord()==0 && ge.getyCoord()==board.getHeight()-1) di=2;
+		else if(ge.getxCoord()==board.getWidth()-1 && ge.getyCoord()==0) di=7;
+		else if(ge.getxCoord()==board.getWidth()-1 && ge.getyCoord()==board.getHeight()-1) di=9;
+		else if(ge.getxCoord()==0) di=3;
+		else if(ge.getxCoord()==board.getWidth()-1) di=8;
+		else if(ge.getyCoord()==0) di=6;
+		else if(ge.getyCoord()==board.getHeight()-1) di=1;
+
 		// Return the new plane
-		return(new NewPlane(ge.getSymbol(), eg.getSymbol(), di, al, ao));		
+		return(new NewPlane(ge.getSymbol(), eg.getSymbol(), di, ea, al));		
 	}
 	
 	// Processed by ReveiverDispatcher 
@@ -344,7 +347,7 @@ public class GameState extends Observable implements Serializable{
 			backBuffer.put(e.getKey(), e.getValue());
 
 		this.successfulExits = gameState.getSuccessfulExits();
-		this.unsucessfulExits = gameState.getUnsucessfulExits();
+		this.unsuccessfulExits = gameState.getUnsucessfulExits();
 		this.epoch = gameState.getEpoch();
 		this.board = gameState.getBoard();
 
@@ -396,12 +399,13 @@ public class GameState extends Observable implements Serializable{
 		if(previousAdds.containsKey(board.getPorts().get(id))) return;
 		
 		// OK, bora l� adicionar um avi�o ent�o!
+		char id2 = plane.getExitGateID();
 		char newID;
 		for(newID='A'; newID<='Z'; newID++)
 			if(!backBuffer.containsKey(newID))
 				break;
 
-		Plane p = new Plane(newID, board.getPorts().get(id).clone(), plane.getHeightGoal(),
+		Plane p = new Plane(newID, board.getPorts().get(id2).clone(), plane.getHeightGoal(),
 				plane.getHeight(), plane.getHeight(), x, y,
 				plane.getDirection(), newID, 1);
 
@@ -428,7 +432,7 @@ public class GameState extends Observable implements Serializable{
 	synchronized public String toString() {
 		return "GameState [frontBuffer=" + frontBuffer + ", backBuffer="
 				+ backBuffer + ", successfulExits=" + successfulExits
-				+ ", unsucessfulExits=" + unsucessfulExits + ", epoch=" + epoch
+				+ ", unsuccessfulExits=" + unsuccessfulExits + ", epoch=" + epoch
 				+ ", board=" + board + "]";
 	}
 
@@ -442,7 +446,7 @@ public class GameState extends Observable implements Serializable{
 		result = prime * result
 				+ ((frontBuffer == null) ? 0 : frontBuffer.hashCode());
 		result = prime * result + successfulExits;
-		result = prime * result + unsucessfulExits;
+		result = prime * result + unsuccessfulExits;
 		result = prime * result + board.hashCode();
 		return result;
 	}
@@ -470,7 +474,7 @@ public class GameState extends Observable implements Serializable{
 			return false;
 		if (successfulExits != other.successfulExits)
 			return false;
-		if (unsucessfulExits != other.unsucessfulExits)
+		if (unsuccessfulExits != other.unsuccessfulExits)
 			return false;
 
 		// Compare frontBuffer

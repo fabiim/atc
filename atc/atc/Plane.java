@@ -2,7 +2,7 @@ package atc.atc;
 
 import java.io.Serializable;
 
-public class Plane implements Serializable{
+public class Plane implements Serializable {
 
 	/**
 	 * 
@@ -193,22 +193,22 @@ public class Plane implements Serializable{
 
 	@Override
 	public String toString() {
-		return "Plane [ID=" + ID + ", exitGate=" + exitGate + ", exitAltitude="
-				+ exitAltitude + ", altitudeObjectivo=" + altitudeObjectivo
-				+ ", altitude=" + altitude + ", xCoord=" + xCoord + ", yCoord="
-				+ yCoord + ", direction=" + direction + ", symbol=" + symbol
-				+ ", speed=" + speed + "]";
+		
+		String xCoord = Integer.toString(this.xCoord);
+		String yCoord = Integer.toString(this.yCoord);
+		if(this.xCoord<10) xCoord = "0"+xCoord;
+		if(this.yCoord<10) yCoord = "0"+yCoord;
+		
+		if(altitude!=altitudeObjectivo)
+			return ID.charValue()+" ("+xCoord+","+yCoord+") "+"Altitude: "+altitude+"/"+altitudeObjectivo+ " Dir: "+direction +" Exit: "+exitGate.getSymbol()+" @Ê"+ exitAltitude;
+		else
+			return ID.charValue()+" ("+xCoord+","+yCoord+") "+"Altitude: "+altitude+"      Dir: "+direction +" Exit: "+exitGate.getSymbol()+" @Ê"+ exitAltitude;
 	}
 
 	public Plane clone(){
 		return(new Plane(ID, exitGate, exitAltitude,
 			 altitudeObjectivo, altitude, xCoord, yCoord,
 			 direction, symbol, speed));
-	}
-	
-	// TODO pra que que isto serve?
-	public void turn(){
-		
 	}
 
 	public void move(){

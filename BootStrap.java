@@ -5,6 +5,7 @@ import atc.atc.GameState;
 import atc.dispatchers.ChannelCreator;
 import atc.messages.StateMessage;
 import atc.screen.Console;
+import atc.screen.Scoreboard;
 import atc.screen.Screen;
 import atc.util.SerializableInterface;
 import net.sf.appia.jgcs.*; 
@@ -17,7 +18,7 @@ public class BootStrap {
 	static Logger logger = Logger.getLogger(BootStrap.class); 
 	public static void main (String[] args) {
 		GameState gg = new GameState(); 
-		; 
+		 
 		try {
 			byte[] bbs = SerializableInterface.objectToByte(gg);
 			GameState b = (GameState) SerializableInterface.byteToObject(bbs); 
@@ -46,12 +47,15 @@ public class BootStrap {
 		    ChannelCreator.CreateChannel(game, servTotal, controlS, dataS);
 		    controlS.join();
 		    Screen scr = new Screen();
+		    Scoreboard score = new Scoreboard(game);
 		    
 		    game.addObserver(scr);
+		    game.addObserver(score);
 		    
 		    Console con = new Console(game, ChannelCreator.getSenderDispatcher());
 		    new Thread(scr).start();
 		    new Thread(con).start();
+		    new Thread(score).start();
 	}catch(Exception e){
 		System.err.println(e.getMessage());
 		e.printStackTrace(); 

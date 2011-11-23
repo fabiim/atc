@@ -3,23 +3,21 @@ package atc.screen;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import atc.messages.*;
-import atc.atc.*;
-import atc.dispatchers.SendDispatcher;
+	import java.util.Timer;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
+import atc.atc.GameState;
+import atc.dispatchers.SendDispatcher;
+import atc.messages.Chat;
+import atc.messages.SetHeightGoal;
+import atc.messages.Turn;
 
 public class Console implements Runnable{
 	
-	private GameState gs;
 	private Timer timer;
 	private NewPlaneTimer task;
 	private SendDispatcher sd;
 	
 	public Console(GameState gs, SendDispatcher sd){
-		this.gs=gs;
 		timer=new Timer();
 		task=new NewPlaneTimer(gs,sd);
 		timer.scheduleAtFixedRate(task, 1000, 1000);
@@ -47,12 +45,14 @@ public class Console implements Runnable{
 	}
 	
 	public void sendCommand(String input){
-		String cmdRegex = "^[A-Z][at][1-9]";
+		String cmdRegex = "^[A-Za-z][at][1-9]";
 		if(!input.matches(cmdRegex)) return;
 		char idAviao = input.charAt(0);
 		char comando = input.charAt(1);
 		String value = input.substring(2);		
 		
+		// Uppercase IDs
+		if(Character.isLowerCase(idAviao)) idAviao = Character.toUpperCase(idAviao);
 		switch(comando){
 			case 'a':
 				// Create SetHeightGoal message
@@ -60,7 +60,6 @@ public class Console implements Runnable{
 				hmsg.setPlaneId(idAviao);
 				hmsg.setObjectiveHeight(Integer.valueOf(value)*1000);
 				// Send message
-				System.out.println(hmsg.toString()); // DEBUG
 				sd.send(hmsg);
 				break;
 			case 't':
@@ -70,7 +69,6 @@ public class Console implements Runnable{
 				if(Integer.valueOf(value)==5) return;
 				tmsg.setDirection(Integer.valueOf(value));
 				// Send message
-				System.out.println(tmsg.toString()); // DEBUG
 				sd.send(tmsg);
 				break;
 			default:
@@ -80,16 +78,14 @@ public class Console implements Runnable{
 	
 	public void sendChatMsg(String input){
 		input = input.substring(1);
-		String nickRegex = "^[A-Za-z0-9]{2,16}"; // Nicknames are 1 alphanumeric words
-		String[] splited = input.split(" ", 2);
+		//String nickRegex = "^[A-Za-z0-9]{2,16}"; // Nicknames are 1 alphanumeric words
+		//String[] splited = input.split(" ", 2);
 		
-		if(!splited[0].matches(nickRegex)) return;
-		else{
-			// Create chat message
-			
-			// Send message
-			System.out.println("To "+splited[0]+": "+splited[1]);
-			// sd.send();
-		}
+		// Create chat message
+		Chat cmsg = new Chat();
+		// TODO Adicionar um nick ou identificador ao gajo
+		cmsg.setText(input);
+		// Send message
+		sd.send(cmsg);
 	}
 }
