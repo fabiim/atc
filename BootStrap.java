@@ -46,13 +46,15 @@ public class BootStrap {
 		    GameState game = new GameState(); 
 		    ChannelCreator.CreateChannel(game, servTotal, controlS, dataS);
 		    controlS.join();
+		    
+		    // Init interface
+		    Console con = new Console(game, ChannelCreator.getSenderDispatcher());
 		    Screen scr = new Screen();
 		    Scoreboard score = new Scoreboard(game);
 		    
 		    game.addObserver(scr);
 		    game.addObserver(score);
 		    
-		    Console con = new Console(game, ChannelCreator.getSenderDispatcher());
 		    new Thread(scr).start();
 		    new Thread(con).start();
 		    new Thread(score).start();
