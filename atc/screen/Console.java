@@ -16,8 +16,23 @@ public class Console implements Runnable{
 	private Timer timer;
 	private NewPlaneTimer task;
 	private SendDispatcher sd;
+	private String nickname;
 	
 	public Console(GameState gs, SendDispatcher sd){
+		String nickRegex = "^[A-Za-z0-9]{3,16}"; // Nicknames are 1 alphanumeric words ([3,16] chars)
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		
+		// Get nickname
+		System.out.println("Please insert a nickname (3-16 characters):");
+		do
+			try {
+				nickname = in.readLine();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		while(!nickname.matches(nickRegex));
+		
 		timer=new Timer();
 		task=new NewPlaneTimer(gs,sd);
 		timer.scheduleAtFixedRate(task, 1000, 1000);
@@ -78,13 +93,11 @@ public class Console implements Runnable{
 	
 	public void sendChatMsg(String input){
 		input = input.substring(1);
-		//String nickRegex = "^[A-Za-z0-9]{2,16}"; // Nicknames are 1 alphanumeric words
-		//String[] splited = input.split(" ", 2);
 		
 		// Create chat message
 		Chat cmsg = new Chat();
 		// TODO Adicionar um nick ou identificador ao gajo
-		cmsg.setText(input);
+		cmsg.setText(nickname+": "+input);
 		// Send message
 		sd.send(cmsg);
 	}
