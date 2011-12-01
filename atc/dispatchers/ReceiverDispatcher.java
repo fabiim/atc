@@ -117,7 +117,7 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 		} 
 		logger.info("Going to process message: "+ game_message.toString()); 
 		
-		game.processMsg(game_message); 		
+		//game.processMsg(game_message); 		
 		
 		if (resolving_states_state){
 			if (game_message instanceof StateMessage){
@@ -133,7 +133,7 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 				received_states ++; 
 				if (received_states == membership_size) {
 					resolving_states_state = false;
-					
+
 					//We have finished receiving all the states from the players. We MUST warn senderDispatcher that it is ok to send messages
 					 LpcMessage.UnBlock  m = lpcFactory.new UnBlock() ;
 					 ProducerConsumer.produce(queue, m); 
