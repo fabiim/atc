@@ -43,9 +43,8 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 	private Logger logger = Logger.getLogger(ReceiverDispatcher.class);
 	private BlockSession control;
 
-	protected ReceiverDispatcher(GameState game, BlockingQueue<LpcMessage> queue, BlockSession controlS) {
-		logger.setLevel(Level.INFO); 
-		this.game = game; 
+	protected ReceiverDispatcher(GameState game2, BlockingQueue<LpcMessage> queue, BlockSession controlS) {
+		this.game = game2; 
 		this.queue = queue;
 		this.control = controlS; 
 	}
@@ -58,8 +57,6 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 
 		//TODO - block state never read locally
 		blocked_state = true;
-		resolving_states_state = false; 
-		logger.info("...returning control of execution to appia" );
 	}
 	
 	@Override
@@ -70,7 +67,7 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 	
 	@Override
 	public void onMembershipChange() {
-		logger.info("Membership changing... "); 
+	//	logger.info("Membership changing... "); 
 		
 		StateMessage sm = new StateMessage(game);
 		//This is important. A SyncQueue will hold APPIA (the thread running this method) until the item is consumed in the queue.   
@@ -89,7 +86,7 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 		ProducerConsumer.produce(queue,lm); // produced LPC message containing above payload.
 				
 
-		logger.info("consumed the membership size:" + membership_size ); 
+		logger.info("New membership size: " + membership_size ); 
 		received_states = new Integer(0); 
 		resolving_states_state = true;
 		blocked_state = false; 
@@ -105,7 +102,7 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 	@Override
 	public Object onMessage(Message msg){
 		atc.messages.Message  game_message = null;
-		logger.info("Received message..."); 
+		//logger.info("Received message..."); 
 		try {
 			game_message	= (atc.messages.Message) SerializableInterface.byteToObject(msg.getPayload());
 		} catch (Exception e) {
@@ -115,18 +112,21 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 			logger.fatal(e.getMessage() + e.getStackTrace());
 			return null; 
 		} 
-		logger.info("Going to process message: "+ game_message.toString()); 
+		//logger.info("Going to process message: "+ game_message.toString()); 
 		
 		//game.processMsg(game_message); 		
-		
+				
+		logger.info(game_message.getClass()); 
 		if (resolving_states_state){
+			logger.info("we are solving the state problem"); 
 			if (game_message instanceof StateMessage){
 				//we accept those messages in this state
 				
 				//TODO - if not in total order we have the problem of processes choosing different states in different ticks
 				StateMessage sm = (StateMessage) game_message; 
 				if (sm.getGame().getEpoch() > game.getEpoch()){
-					game = sm.getGame(); 
+					game.processMsg(game_message); 
+					//game = sm.getGame(); 
 				}
 				
 				//check to see if it is the last message
@@ -135,12 +135,13 @@ public class ReceiverDispatcher implements MessageListener, ExceptionListener, M
 					resolving_states_state = false;
 
 					//We have finished receiving all the states from the players. We MUST warn senderDispatcher that it is ok to send messages
-					 LpcMessage.UnBlock  m = lpcFactory.new UnBlock() ;
-					 ProducerConsumer.produce(queue, m); 
+					LpcMessage.UnBlock  m = lpcFactory.new UnBlock() ;
+					ProducerConsumer.produce(queue, m); 
 				}
 			}
 		}
 		else{
+			//logger.info("processing  new message " + game_message); 
 			game.processMsg(game_message); 
 		}
 		return null; 

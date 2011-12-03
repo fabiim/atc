@@ -24,7 +24,10 @@ public class Screen implements Observer,Runnable{
 	
 	private static Board map;
 	private static Terminal term;
-
+	private static Screen instance; 
+	
+	
+		
 	public Screen(){
 		map = Board.readMap(GameState._defaultBoardFile);
 		term = Terminal.getTerminal();
@@ -34,10 +37,12 @@ public class Screen implements Observer,Runnable{
 		map = Board.readMap(filename);
 	}
 	
+	
 	public void run(){
 		initMap();
 	}
 	
+		
 	public void update(Observable obj, Object arg){		
 		// Clear the terminal
 		term.clearScreen();
@@ -68,6 +73,7 @@ public class Screen implements Observer,Runnable{
 			}
 		} );
 
+		
 		// Terminal settings
 		term = new Terminal(map.getWidth(),map.getHeight());
 		term.setScroll(false);

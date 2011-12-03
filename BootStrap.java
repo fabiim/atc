@@ -41,19 +41,25 @@ public class BootStrap {
 		    g.setGroupName("tfd000group");
 		   
 			AppiaService servTotal = new AppiaService("vsc+total");
+			AppiaService servFifo = new AppiaService("vsc+fifo");
+			AppiaService servUDP = servFifo;
+			
 		    BlockSession controlS = (BlockSession)p.openControlSession(g);
 		    DataSession dataS = p.openDataSession(g);
-		    GameState game = new GameState(); 
-		    ChannelCreator.CreateChannel(game, servTotal, controlS, dataS);
+		    GameState game = new GameState();
+		    
+		    ChannelCreator.CreateChannel(game, servTotal, servFifo, servUDP, controlS, dataS);
 		    controlS.join();
 		    
 		    // Init interface
 		    Console con = new Console(game, ChannelCreator.getSenderDispatcher());
+		 
 		    Screen scr = new Screen();
 		    Scoreboard score = new Scoreboard(game);
-		    
+		   
 		    game.addObserver(scr);
 		    game.addObserver(score);
+		    
 		    
 		    new Thread(scr).start();
 		    new Thread(con).start();

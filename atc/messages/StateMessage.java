@@ -2,6 +2,7 @@ package atc.messages;
 
 import java.io.Serializable;
 
+import atc.atc.DelegatorGameState;
 import atc.atc.GameState;
 
 public class StateMessage extends Message implements Serializable{
@@ -22,7 +23,7 @@ public class StateMessage extends Message implements Serializable{
 	
 	public StateMessage(StateMessage m){
 		setOpcode(MessageOpCodes.STATEMESSAGE);  
-		game = m.getGame().clone(); 
+		game = m.getGame(); 
 	}
 	
 	
@@ -30,7 +31,7 @@ public class StateMessage extends Message implements Serializable{
 		return game.clone();
 	}
 	
-	public void setGame(atc.atc.GameState game) {
+	public void setGame(atc.atc.DelegatorGameState game) {
 		this.game = game.clone();
 	}
 

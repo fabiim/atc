@@ -11,7 +11,7 @@ import atc.dispatchers.SendDispatcher;
 
 public class NewPlaneTimer extends TimerTask {
 
-	private final static int _newPlaneProbability = 100;
+	private final static int _newPlaneProbability = 10;
 	private GameState gs;
 	private SendDispatcher sd;
 	Logger log = Logger.getLogger(NewPlaneTimer.class); 

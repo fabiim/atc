@@ -9,6 +9,7 @@ import net.sf.jgcs.DataSession;
 import net.sf.jgcs.JGCSException;
 import net.sf.jgcs.membership.BlockSession;
 
+import atc.atc.DelegatorGameState;
 import atc.atc.GameState;
 
 /**
@@ -30,12 +31,12 @@ public class ChannelCreator {
 	}
 	
 	public static void CreateChannel(GameState game, AppiaService servTotal,
-			BlockSession controlS, DataSession dataS) throws JGCSException{
+			AppiaService servFifo, AppiaService servUDP, BlockSession controlS, DataSession dataS) throws JGCSException{
 		
 		
 		BlockingQueue<LpcMessage> queue = new LinkedBlockingQueue<LpcMessage>();
 			receiver = new ReceiverDispatcher(game,queue, controlS); 
-		 sender = new SendDispatcher(controlS, dataS, servTotal);
+		 sender = new SendDispatcher(controlS, dataS, servTotal, servFifo, servUDP);
 		 
 		(new Thread(new ReceiverSenderChannelThread(queue, sender))).start(); 
 		
